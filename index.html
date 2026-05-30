@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="en-za">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MzansiPedia</title>
+    <meta property="og:url" content="https://mzansipedia.app/">
+    <meta property="og:title" content="MzansiPedia">
+    <meta name="description" content="South African stories, history & culture in your feed">
+    <meta property="og:description" content="South African stories, history & culture in your feed">
+    <meta property="og:locale" content="en-za">
+    <meta property="og:type" content="website">
+    <meta content="#000000" name="theme-color" />
+    <link rel="manifest" href="app.webmanifest" />
+    <style>
+        :root {
+            --red: #C8102E;
+            --gold: #FFB81C;
+            --green: #007749;
+            --blue: #1D9BF0;
+            --bg: #000000;
+            --bg-card: #16181C;
+            --bg-hover: #1D1F23;
+            --border: #2F3336;
+            --text-primary: #E7E9EA;
+            --text-secondary: #71767B;
+            --text-tertiary: #536471;
+            --safe-bottom: 0px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            background: var(--bg);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        body { display: flex; min-height: 100vh; }
+        a { color: var(--blue); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* === LEFT SIDEBAR === */
+        .sidebar {
+            width: 275px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 0 12px;
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+        }
+        .sidebar-brand {
+            padding: 12px;
+            margin-bottom: 4px;
+        }
+        .sidebar-brand h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+        .sidebar-brand h1 span { color: var(--green); }
+        .sidebar nav { flex: 1; }
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px;
+            border-radius: 9999px;
+            font-size: 20px;
+            font-weight: 400;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        .sidebar nav a:hover { background: var(--bg-hover); text-decoration: none; }
+        .sidebar nav a.active { font-weight: 700; }
+        .sidebar nav a svg { width: 26px; height: 26px; flex-shrink: 0; }
+        .sidebar nav a span { white-space: nowrap; }
+
+        /* === MAIN FEED === */
+        .main {
+            flex: 1;
+            max-width: 600px;
+            margin-left: 275px;
+            margin-right: 350px;
+            border-right: 1px solid var(--border);
+            min-height: 100vh;
+        }
+        .feed-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+        .feed-header-title {
+            padding: 12px 16px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .feed-tabs {
+            display: flex;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .feed-tabs::-webkit-scrollbar { display: none; }
+        .feed-tab {
+            flex: 1;
+            min-width: fit-content;
+            padding: 16px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+            white-space: nowrap;
+        }
+        .feed-tab:hover { background: var(--bg-hover); }
+        .feed-tab.active {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .feed-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 56px;
+            height: 4px;
+            background: var(--green);
+            border-radius: 2px;
+        }
+
+        /* === POST CARD === */
+        .post {
+            display: flex;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .post:hover { background: var(--bg-hover); }
+        .post-avatar {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: var(--border);
+        }
+        .post-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .post-avatar .avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            background: var(--border);
+        }
+        .post-body { flex: 1; min-width: 0; }
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+            line-height: 1.3;
+        }
+        .post-title {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text-primary);
+        }
+        .post-category {
+            font-size: 13px;
+            color: var(--green);
+            font-weight: 500;
+        }
+        .post-meta {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+        .post-text {
+            margin-top: 4px;
+            font-size: 15px;
+            line-height: 1.5;
+            color: var(--text-primary);
+            word-break: break-word;
+        }
+        .post-media {
+            margin-top: 12px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .post-media img {
+            width: 100%;
+            max-height: 510px;
+            object-fit: cover;
+            display: block;
+            background: var(--bg-card);
+        }
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            max-width: 425px;
+            margin-top: 12px;
+        }
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 9999px;
+            transition: all 0.15s;
+        }
+        .post-action:hover { background: rgba(29,155,240,0.1); color: var(--blue); }
+        .post-action svg { width: 18px; height: 18px; }
+        .post-action.like-btn:hover { color: #F91880; background: rgba(249,24,128,0.1); }
+        .post-action.like-btn.liked { color: #F91880; }
+        .post-action.like-btn.liked svg { fill: #F91880; }
+        .post-action.share-btn:hover { color: var(--green); background: rgba(0,119,73,0.1); }
+
+        /* === RIGHT SIDEBAR === */
+        .right-panel {
+            width: 350px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 0 24px;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+        .right-panel::-webkit-scrollbar { display: none; }
+        .search-box {
+            position: sticky;
+            top: 0;
+            padding: 8px 0 12px;
+            background: var(--bg);
+            z-index: 10;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 48px;
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .search-input:focus { border-color: var(--green); background: var(--bg); }
+        .search-input::placeholder { color: var(--text-secondary); }
+        .search-wrapper {
+            position: relative;
+        }
+        .search-wrapper svg {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            color: var(--text-secondary);
+        }
+        .trending-box {
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        .trending-box-title {
+            font-size: 20px;
+            font-weight: 800;
+            padding: 12px 16px;
+        }
+        .trending-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .trending-item:hover { background: var(--bg-hover); }
+        .trending-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .trending-topic {
+            font-size: 15px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+        .trending-count {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        .trending-show-more {
+            padding: 16px;
+            color: var(--green);
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .trending-show-more:hover { background: var(--bg-hover); }
+
+        /* === LOADING === */
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 15px;
+            z-index: 100;
+        }
+        #loading::before {
+            display: block;
+            width: 28px;
+            height: 28px;
+            margin: 0 auto 12px;
+            border: 3px solid var(--border);
+            border-top-color: var(--green);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* === START SCREEN === */
+        #startScreen {
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-card);
+            border: none;
+            width: 90%;
+            height: 90%;
+            max-width: 480px;
+            color: var(--text-primary);
+            border-radius: 16px;
+            padding: 40px 32px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        #startScreen h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--green), var(--gold), var(--red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        #startScreen h2 {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        #startScreen p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+        #startScreen strong { color: var(--text-primary); }
+        #categoryPickList {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 12px 0;
+        }
+        .categoryPicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .categoryPicker:hover { border-color: var(--green); }
+        .categoryPicker:has(input:checked) {
+            background: var(--green);
+            border-color: var(--green);
+            color: #FFF;
+        }
+        .categoryPicker input { display: none; }
+        #categorySearch { margin: 12px 0; }
+        #categorySearch input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+        }
+        #categorySearch input:focus { border-color: var(--green); }
+        #categorySearch input::placeholder { color: var(--text-secondary); }
+        #categorySearch select {
+            width: 100%;
+            margin-top: 4px;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        #categorySearch select:not(:has(option)) { display: none; }
+        #startBtn {
+            margin-top: 20px;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 9999px;
+            background: var(--green);
+            color: #FFF;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        #startBtn:hover { background: #005D39; }
+        #startBtn[disabled] { background: var(--border); color: var(--text-secondary); cursor: not-allowed; }
+
+        /* === DIALOGS === */
+        ::backdrop { background: rgba(91,112,131,0.4); }
+        .modal {
+            &[open] { display: flex; }
+            flex-direction: column;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            width: 90%;
+            height: 80%;
+            max-width: 500px;
+            color: var(--text-primary);
+            border-radius: 16px;
+            padding: 0;
+            overflow: hidden;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            height: 53px;
+            border-bottom: 1px solid var(--border);
+        }
+        .modal-header h2 { font-size: 20px; font-weight: 700; }
+        .closeBtn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+        .closeBtn:hover { background: var(--bg-hover); }
+        .modal-body {
+            padding: 16px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .modal-body p {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        .modal-body label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            font-size: 15px;
+            font-weight: 500;
+            border-bottom: 1px solid var(--border);
+        }
+        .modal-body label:has(input[type="checkbox"]) { cursor: pointer; }
+        .modal-body input[type="checkbox"] {
+            width: 40px;
+            height: 22px;
+            appearance: none;
+            background: var(--border);
+            border-radius: 11px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .modal-body input[type="checkbox"]::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 18px;
+            height: 18px;
+            background: #FFF;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+        .modal-body input[type="checkbox"]:checked { background: var(--green); }
+        .modal-body input[type="checkbox"]:checked::after { transform: translateX(18px); }
+        .modal-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 9999px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.15s;
+        }
+        .modal-btn-primary { background: var(--green); color: #FFF; }
+        .modal-btn-primary:hover { background: #005D39; }
+        .modal-btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-primary); }
+        .modal-btn-outline:hover { background: var(--bg-hover); }
+        .modal-btn-danger { background: transparent; border: 1px solid #F4212E; color: #F4212E; }
+        .modal-btn-danger:hover { background: rgba(244,33,46,0.1); }
+        profile-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        profile-entry:hover { background: var(--bg-hover); }
+        profile-entry.current { border-color: var(--green); background: rgba(0,119,73,0.08); }
+        profile-entry button {
+            background: none;
+            border: none;
+            color: #F4212E;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        profile-entry button:hover { background: rgba(244,33,46,0.1); }
+        #statsModal details {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        #statsModal summary {
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            padding: 4px 0;
+        }
+        #statsModal .likedPostEntry {
+            display: block;
+            padding: 4px 0;
+            font-size: 14px;
+        }
+        .radio-picker {
+            display: flex;
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .radio-picker label {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border-bottom: none;
+            transition: background 0.15s;
+        }
+        .radio-picker label:has(input:checked) { background: var(--green); color: #FFF; }
+        .radio-picker input { display: none; }
+
+        /* === BOTTOM NAV (mobile) === */
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg);
+            border-top: 1px solid var(--border);
+            z-index: 100;
+            padding-bottom: var(--safe-bottom);
+        }
+        .bottom-nav-inner {
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+        }
+        .bottom-nav button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: background 0.15s;
+        }
+        .bottom-nav button:hover { background: var(--bg-hover); }
+        .bottom-nav button svg { width: 24px; height: 24px; }
+        .bottom-nav button span { font-size: 11px; }
+
+        /* === POSTS CONTAINER === */
+        .posts {
+            &:not(:has(.post)) { display: none; }
+        }
+
+        /* === FULL IMAGE === */
+        .fullImg {
+            max-height: 90vh;
+            max-width: 90vw;
+            border-radius: 16px;
+        }
+
+        /* === SEARCH RESULTS === */
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            max-height: 360px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+        }
+        .search-results.show { display: block; }
+        .search-result-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.1s;
+        }
+        .search-result-item:hover { background: var(--bg-hover); }
+        .search-result-item:last-child { border-bottom: none; }
+        .search-result-item .sr-cat { font-size: 12px; color: var(--green); }
+
+        /* === ARTICLE MODAL === */
+        .article-modal {
+            &[open] { display: flex; }
+            flex-direction: column;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            width: 90%;
+            height: 90%;
+            max-width: 680px;
+            color: var(--text-primary);
+            border-radius: 16px;
+            padding: 0;
+            overflow: hidden;
+        }
+        .article-modal .modal-body { padding: 0; }
+        .article-content {
+            padding: 20px 24px;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+        .article-content h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+        .article-content .article-thumb {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin: 16px 0;
+        }
+        .article-content .article-extract {
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+        .article-content .article-extract p { margin-bottom: 16px; }
+        .article-content .article-extract a { color: var(--blue); }
+        .article-content .article-loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+        .article-content .article-loading::after {
+            content: '';
+            display: block;
+            width: 28px;
+            height: 28px;
+            margin: 16px auto 0;
+            border: 3px solid var(--border);
+            border-top-color: var(--green);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .article-footer {
+            display: flex;
+            gap: 8px;
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+        }
+        .article-footer a {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .article-footer .read-more { background: var(--green); color: #FFF; }
+        .article-footer .read-more:hover { background: #005D39; text-decoration: none; }
+        .article-footer .share-article { background: transparent; border: 1px solid var(--border); color: var(--text-primary); cursor: pointer; }
+        .article-footer .share-article:hover { background: var(--bg-hover); }
+
+        /* === ANIMATIONS === */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .post {
+            animation: fadeInUp 0.35s ease both;
+        }
+        .post:nth-child(1) { animation-delay: 0s; }
+        .post:nth-child(2) { animation-delay: 0.05s; }
+        .post:nth-child(3) { animation-delay: 0.1s; }
+        .post:nth-child(4) { animation-delay: 0.15s; }
+        .post:nth-child(5) { animation-delay: 0.2s; }
+        .post:nth-child(6) { animation-delay: 0.25s; }
+        .post:nth-child(7) { animation-delay: 0.3s; }
+        .post:nth-child(8) { animation-delay: 0.35s; }
+        .post:nth-child(9) { animation-delay: 0.4s; }
+        .post:nth-child(10) { animation-delay: 0.45s; }
+
+        .like-btn.liked svg {
+            animation: likePop 0.3s ease;
+        }
+        @keyframes likePop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        /* === MOBILE === */
+        @media (max-width: 1280px) {
+            .right-panel { display: none; }
+            .main { margin-right: 0; }
+        }
+        @media (max-width: 1024px) {
+            .sidebar { display: none; }
+            .main { margin-left: 0; }
+            .bottom-nav { display: block; }
+            .main { padding-bottom: 64px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">Loading...</div>
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h1><span>M</span>zansiPedia</h1>
+        </div>
+        <nav>
+            <a class="active" onclick="return false">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.591 7.146L12.52 1.157c-.316-.21-.724-.21-1.04 0l-9.071 5.99c-.26.173-.409.456-.409.757v13.183c0 .502.418.913.929.913h6.638c.511 0 .929-.41.929-.913v-7.075h3.008v7.075c0 .502.418.913.929.913h6.638c.511 0 .929-.41.929-.913V7.904c0-.301-.158-.584-.408-.758z"/></svg>
+                <span>Home</span>
+            </a>
+            <a onclick="showStatsModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+                <span>Stats</span>
+            </a>
+            <a onclick="showProfilesModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span>Profiles</span>
+            </a>
+            <a onclick="showSettingsModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                <span>Settings</span>
+            </a>
+            <a onclick="showRandomArticle()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+                <span>Random</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- MAIN FEED -->
+    <main class="main">
+        <div class="feed-header">
+            <div class="feed-header-title">MzansiPedia</div>
+            <div class="feed-tabs">
+                <div class="feed-tab active">For you</div>
+                <div class="feed-tab" onclick="showAboutModal()">About</div>
+            </div>
+        </div>
+        <div class="posts"></div>
+    </main>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="right-panel">
+        <div class="search-box">
+            <div class="search-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" class="search-input" placeholder="Search MzansiPedia" id="searchInput" autocomplete="off">
+                <div class="search-results" id="searchResults"></div>
+            </div>
+        </div>
+        <div class="trending-box">
+            <div class="trending-box-title">Trending in Mzansi</div>
+            <div id="trendingList">
+                <div class="trending-item">
+                    <div class="trending-label">History · Trending</div>
+                    <div class="trending-topic">Apartheid</div>
+                </div>
+                <div class="trending-item">
+                    <div class="trending-label">Wildlife · Trending</div>
+                    <div class="trending-topic">Big Five</div>
+                </div>
+                <div class="trending-item">
+                    <div class="trending-label">Culture · Trending</div>
+                    <div class="trending-topic">Amapiano</div>
+                </div>
+                <div class="trending-item">
+                    <div class="trending-label">People · Trending</div>
+                    <div class="trending-topic">Nelson Mandela</div>
+                </div>
+                <div class="trending-item">
+                    <div class="trending-label">Sport · Trending</div>
+                    <div class="trending-topic">Springboks</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- BOTTOM NAV (mobile) -->
+    <div class="bottom-nav">
+        <div class="bottom-nav-inner">
+            <button onclick="return false">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.591 7.146L12.52 1.157c-.316-.21-.724-.21-1.04 0l-9.071 5.99c-.26.173-.409.456-.409.757v13.183c0 .502.418.913.929.913h6.638c.511 0 .929-.41.929-.913v-7.075h3.008v7.075c0 .502.418.913.929.913h6.638c.511 0 .929-.41.929-.913V7.904c0-.301-.158-.584-.408-.758z"/></svg>
+            </button>
+            <button onclick="showStatsModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+            </button>
+            <button onclick="showProfilesModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </button>
+            <button onclick="showRandomArticle()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+            </button>
+            <button onclick="showSettingsModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- ARTICLE MODAL -->
+    <dialog class="article-modal" id="articleModal" closedby=any>
+        <div class="modal-header">
+            <h2 id="articleModalTitle">Article</h2>
+            <button class="closeBtn" aria-label="Close" onclick="articleModal.close()">X</button>
+        </div>
+        <div class="modal-body">
+            <div class="article-content" id="articleContent"></div>
+        </div>
+        <div class="article-footer" id="articleFooter"></div>
+    </dialog>
+
+    <!-- START SCREEN -->
+    <div id="startScreen" popover=manual>
+        <h1>MzansiPedia</h1>
+        <h2>Proudly South African</h2>
+        <p><strong>MzansiPedia</strong> is a pseudo social media feed that algorithmically shows you content from <a href="https://simple.wikipedia.org/">Simple Wikipedia</a> — filtered to only South African stories, history, culture, wildlife, and people.</p>
+        <p>Once loaded, it's available fully offline, and you can install it as an app.</p>
+        <p style="display:none" id="iosmessage">iOS users: Apple limits memory for PWAs. If it crashes, try desktop mode.</p>
+        <p style="font-weight:600;margin-bottom:4px">Pick some categories to get started</p>
+        <div id="categoryPickList"></div>
+        <p style="font-weight:600;margin-bottom:4px">Or search for a topic</p>
+        <div id="categorySearch">
+            <input placeholder="Zulu heritage..." disabled />
+            <select size="5"></select>
+        </div>
+        <p style="margin-top:auto;font-size:13px">Content is from Wikipedia. Some topics may be sensitive (e.g. apartheid history).</p>
+        <button id="startBtn" disabled>I'm ready, explore Mzansi</button>
+    </div>
+
+    <!-- DIALOGS -->
+    <dialog class="modal" id="profilesModal" closedby=any>
+        <div class="modal-header">
+            <h2>Profiles</h2>
+            <button class="closeBtn" aria-label="Close" onclick="profilesModal.close()">X</button>
+        </div>
+        <div class="modal-body">
+            <p id="storeDataWarning" style="display:none">Warning: "Store data" is off. Profile data won't be saved.</p>
+            <div id="profilesList"></div>
+        </div>
+    </dialog>
+
+    <dialog class="modal" id="statsModal" closedby=any>
+        <div class="modal-header">
+            <h2>Statistics</h2>
+            <button class="closeBtn" aria-label="Close" onclick="statsModal.close()">X</button>
+        </div>
+        <div class="modal-body">
+            <p id="generalStats"></p>
+            <details ontoggle=updateTopStats()><summary>Top categories</summary><div id="top100"></div></details>
+            <details ontoggle=updateTopStats()><summary>Bottom categories</summary><div id="bottom100"></div></details>
+            <details ontoggle=updateLikeStats()><summary>Liked posts</summary><div id="likedPosts"></div></details>
+        </div>
+    </dialog>
+
+    <dialog class="modal" id="settingsModal" closedby=any>
+        <div class="modal-header">
+            <h2>Settings</h2>
+            <button class="closeBtn" aria-label="Close" onclick="settingsModal.close()">X</button>
+        </div>
+        <div class="modal-body">
+            <label>Store data<input id="setting-storeData" type=checkbox></label>
+            <p>Store your algorithm data locally. No data leaves your device.</p>
+            <label>Open links in English Wikipedia<input id="setting-openMainWiki" type=checkbox></label>
+            <p>Open articles on English Wikipedia instead of Simple English.</p>
+            <pseudo-label>Theme
+            <div class="radio-picker" role="radiogroup" aria-label="Theme picker">
+                <label><input type="radio" name="theme" id="theme-auto" checked>Auto</label>
+                <label><input type="radio" name="theme" id="theme-dark">Dark</label>
+            </div>
+            </pseudo-label>
+            <div style="height:16px"></div>
+            <button class="modal-btn modal-btn-outline" onclick="showAboutModal()">About MzansiPedia</button>
+            <button class="modal-btn modal-btn-danger" onclick="resetAlgorithm()">Reset the algorithm</button>
+            <button class="modal-btn modal-btn-danger" onclick="resetEverything()" style="margin-top:4px">Delete all data</button>
+        </div>
+    </dialog>
+
+    <dialog class="modal" id="aboutModal" closedby=any>
+        <div class="modal-header">
+            <h2>About MzansiPedia</h2>
+            <button class="closeBtn" aria-label="Close" onclick="aboutModal.close()">X</button>
+        </div>
+        <div class="modal-body">
+            <p><strong>MzansiPedia</strong> is a pseudo social media feed that algorithmically shows you South African content from <a href="https://simple.wikipedia.org/">Simple Wikipedia</a>. It learns what you engage with to suggest more. The algorithm runs locally — no data leaves your device.</p>
+            <p>Once loaded, it's available fully offline and installable as an app.</p>
+            <p>Built with love for Mzansi.</p>
+        </div>
+    </dialog>
+
+<script type="text/javascript">
+    /* PWA stuff */
+    let installPrompt = null;
+    const installButton = document.querySelector("#install");
+
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !navigator.standalone) {
+        if (installButton) installButton.classList.remove("hidden");
+        if (installButton) installButton.onclick = () => alert("To install, open in Safari, tap share, and choose 'Add to Home Screen'.");
+    }
+
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      installPrompt = event;
+      if (installButton) installButton.classList.remove("hidden");
+    });
+    if (installButton) installButton.addEventListener("click", async () => {
+      if (!installPrompt) {
+        return installButton.classList.add("hidden");
+      }
+      await (await fetch("index.html")).text();
+      const result = await installPrompt.prompt();
+      console.log(`Install prompt was: ${result.outcome}`);
+      disableInAppInstallPrompt();
+    });
+    
+    function disableInAppInstallPrompt() {
+      installPrompt = null;
+      if (installButton) installButton.classList.add("hidden");
+    }
+
+    window.swReg = null;
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js").then(reg => window.swReg = reg).catch(err => {
+            window.swReg = "err";
+            console.error(`Registration failed with ${err}`);
+        });
+        navigator.serviceWorker.addEventListener('message', event => {
+            if (event.data.event=="downloadProgress")
+                updateProgress(event.data.data);
+        })
+    } else {
+        window.swReg = "err";
+    }
+</script>
+<script type="text/javascript">
+    const pagesArr = [];
+    let noPageMaps = {};
+    const recursiveCache = new Map();
+    let categoryScores = {
+        "given names": -1000,
+        "surnames": -1000,
+    };
+    let seenPosts = [];
+    let likedPosts = [];
+    let likesLen = 0;
+    let timeSpentSession = 0;
+    let timeSpentTotal = 0;
+    let profileName = "Default";
+
+    let lastSpentTime = Date.now();
+
+    const defaultCategories = ["history of south africa", "south african culture", "geography of south africa", "south african wildlife", "south african sport", "south african cuisine", "south african music", "south african people", "apartheid in south africa", "south african languages", "south african fashion", "south african art"];
+    let postsWithoutLike = 0;
+
+    const HTML_VERSION = "2.0.0";
+
+    function loadSettings() {
+        const baseSettings = {
+            storeData: true,
+            openMainWiki: true,
+            dataSize: 532833,
+            profile: "default",
+            profiles: ["default"],
+            theme: "theme-auto",
+        };
+        const loadedSettings = JSON.parse(localStorage.getItem("mzansipedia-settings") ?? '{}');
+        const computedSettings = Object.assign(baseSettings, loadedSettings);
+        document.querySelector(`#${computedSettings.theme}`).checked = true;
+        document.getElementById("setting-storeData").checked = computedSettings.storeData;
+        document.getElementById("setting-openMainWiki").checked = computedSettings.openMainWiki;
+        return computedSettings;
+    }
+
+    function saveSettings() {
+        settings.theme = document.querySelector('[name=theme]:checked')?.id ?? "theme-auto";
+        settings.storeData = document.getElementById("setting-storeData").checked;
+        settings.openMainWiki = document.getElementById("setting-openMainWiki").checked;
+        localStorage.setItem("mzansipedia-settings", JSON.stringify(settings));
+    }
+
+    function resetAlgorithm() {
+        if (!confirm(`Reset the algorithm and statistics in profile "${profileName}"?`))
+            return;
+        localStorage.removeItem(`mzansipedia-profile-${settings.profile}`);
+        loadProfile(settings.profile);
+        document.location.reload();
+    }
+
+    async function resetEverything(autoConfirm) {
+        if (!autoConfirm && !confirm("Are you sure you want to reset all data and settings?"))
+            return;
+        if (!autoConfirm && window.swReg && window.swReg !== "err") {
+            await (await fetch("clearHtml")).text();
+            return window.swReg.unregister().then(e=>resetEverything(true)).catch(e=>resetEverything(true));
+        }
+        settings.profiles.forEach(e=>deleteProfile(e));
+        localStorage.removeItem("mzansipedia-settings");
+        document.location.reload();
+    }
+
+    const settings = loadSettings();
+
+    const DATA_SIZE = settings.dataSize;
+    const DATA_URL = `smoldata.json?${DATA_SIZE}`;
+
+    const startBtn = document.getElementById("startBtn");
+    const categoryPickList = document.getElementById("categoryPickList");
+    const categorySearch = document.getElementById("categorySearch");
+    const categorySearchInput = categorySearch.querySelector("input");
+    const categorySearchSelect = categorySearch.querySelector("select");
+
+    const profilesModal = document.getElementById("profilesModal");
+    const statsModal = document.getElementById("statsModal");
+    const settingsModal = document.getElementById("settingsModal");
+    const aboutModal = document.getElementById("aboutModal");
+
+    const profilesList = document.getElementById("profilesList");
+    const storeDataWarning = document.getElementById("storeDataWarning");
+
+    settingsModal.querySelectorAll("input").forEach(e => e.onchange = saveSettings);
+
+    document.getElementById("searchInput").oninput = (e) => searchArticles(e.target.value);
+
+    categorySearchInput.oninput = () => {
+        const searchText = categorySearchInput.value;
+        if (!searchText.length)
+            return categorySearchSelect.innerText = "";
+        const searchTarget = [...pagesArr.map(e=>e.title.toLowerCase()), ...Object.values(noPageMaps).map(e=>e.toLowerCase())];
+        let results = searchTarget.filter(e => e.startsWith(searchText.toLowerCase())).slice(0,100);
+        if (results.length < 100)
+            results = [...results, ...searchTarget.filter(e => e.includes(searchText.toLowerCase()) && !results.includes(e)).slice(0,100-results.length)];
+        if (results.length == 100)
+            results.push("...");
+        categorySearchSelect.innerText = "";
+        results.forEach(e => {
+            const option = document.createElement("option");
+            option.innerText = `${e.slice(0,1).toUpperCase()}${e.slice(1).toLowerCase()}`;
+            option.value = e;
+            categorySearchSelect.appendChild(option);
+        });
+    }
+
+    categorySearchSelect.oninput = () => {
+        if (!categorySearchSelect.value || categorySearchSelect.value == "...")
+            return;
+        addPickableCategory(categorySearchSelect.value, true);
+    }
+
+    function initProfile() {
+        if (!settings.storeData)
+            return false;
+        if (!settings.profiles.length)
+            settings.profiles.push("default");
+        if (!settings.profiles.includes(settings.profile))
+            settings.profile = settings.profiles[0];
+        return loadProfile(settings.profile);
+    }
+
+    function loadProfile(profileId) {
+        settings.profile = profileId;
+        const defaultProfile = {
+            profileName: "Default",
+            categoryScores: {
+                "given names": -1000,
+                "surnames": -1000,
+            },
+            seenPosts: [],
+            likedPosts: [],
+            timeSpentTotal: 0,
+        }
+        const loadedProfile = JSON.parse(localStorage.getItem(`mzansipedia-profile-${profileId}`) ?? "{}");
+        const profile = Object.assign(defaultProfile, loadedProfile);
+        categoryScores = profile.categoryScores;
+        seenPosts = profile.seenPosts;
+        likedPosts = profile.likedPosts;
+        timeSpentTotal = profile.timeSpentTotal;
+        profileName = profile.profileName;
+        pagesArr.filter(e=>e.seen).forEach(e=>e.seen=0);
+        try {
+            seenPosts.forEach(postId => {
+                const post = pagesArr.find(e=>e.id==postId);
+                post.seen = post.seen || 0;
+                post.seen += 1;
+            });
+        } catch {}
+        window.scrollTo(0, 0);
+        document.querySelector(".posts").innerText = "";
+        likesLen = likedPosts.length;
+        saveSettings();
+        saveProfile();
+        return !!seenPosts.length;
+    }
+
+    function saveProfile() {
+        if (!settings.storeData)
+            return;
+        const profile = {
+            profileName,
+            categoryScores,
+            seenPosts,
+            likedPosts,
+            timeSpentTotal,
+        }
+        localStorage.setItem(`mzansipedia-profile-${settings.profile}`, JSON.stringify(profile));
+    }
+
+    function addProfile(newProfileName) {
+        const profileId = Math.random().toString(36).slice(2);
+        localStorage.setItem(`mzansipedia-profile-${profileId}`, JSON.stringify({profileName:newProfileName}));
+        settings.profiles.push(profileId);
+        loadProfile(profileId);
+        document.location.reload();
+    }
+
+    function deleteProfile(profileId, skipInit) {
+        localStorage.removeItem(`mzansipedia-profile-${profileId}`);
+        settings.profiles = settings.profiles.filter(e => e != profileId);
+        if (profileId != settings.profile || skipInit)
+            return;
+        initProfile();
+    }
+
+    function showProfilesModal() {
+        profilesModal.showModal();
+        storeDataWarning.style.display = settings.storeData ? "none" : "block";
+        profilesList.innerText = "";
+        settings.profiles.forEach(profileId => {
+            const pName = JSON.parse(localStorage.getItem(`mzansipedia-profile-${profileId}`) ?? "{}")?.profileName || profileId;
+            const isCurrentProfile = profileId == settings.profile;
+            const profileEntry = document.createElement("profile-entry");
+            const deleteButton = document.createElement("button");
+            profileEntry.innerText = pName;
+            if (isCurrentProfile)
+                profileEntry.classList.add("current");
+            profileEntry.setAttribute("tabindex", "0");
+            profileEntry.setAttribute("role", "button");
+            const loadThisProfile = e => {
+                settings.profile = profileId;
+                loadProfile(profileId);
+                profilesModal.close();
+                showProfilesModal();
+            };
+            profileEntry.onclick = loadThisProfile;
+            profileEntry.onkeydown = e => (e.keyCode == 13 || e.keyCode == 32) ? loadThisProfile(e) : true;
+            deleteButton.innerText = "Delete";
+            const deleteThisProfile = e => {
+                e.stopPropagation();
+                if (confirm(`Delete profile ${pName}?`)) {
+                    deleteProfile(profileId);
+                    profilesModal.close();
+                    showProfilesModal();
+                }
+            };
+            deleteButton.onclick = deleteThisProfile;
+            deleteButton.onkeydown = e => (e.keyCode == 13 || e.keyCode == 32) ? deleteThisProfile(e) : true;
+            profileEntry.appendChild(deleteButton);
+            profilesList.appendChild(profileEntry);
+        });
+        const addProfileButton = document.createElement("button");
+        addProfileButton.className = "modal-btn modal-btn-primary";
+        addProfileButton.style.marginTop = "12px";
+        addProfileButton.innerText = "Add profile";
+        addProfileButton.onclick = () => {
+            const pName = prompt("Profile name");
+            if (pName && pName.length) {
+                addProfile(pName);
+                profilesModal.close();
+                showProfilesModal();
+            }
+        }
+        profilesList.appendChild(addProfileButton);
+    }
+
+    function textTime(ms) {
+        const h = Math.floor(ms/1000/3600);
+        const m = Math.floor((ms/1000/60) % 60);
+        const s = Math.floor((ms/1000) % 60);
+        let timeText = `${s} second${s==1?'':'s'}`;
+        if (m || h) {
+            timeText = `${m} minute${m==1?'':'s'}`;
+        }
+        if (h) {
+            timeText = `${h} hour${h==1?'':'s'}, ${m} minute${m==1?'':'s'}`;
+        }
+        return timeText;
+    }
+
+    let topStatsStale = false;
+    let likeStatsStale = false;
+
+    function updateTopStats() {
+        if (!topStatsStale)
+            return;
+        topStatsStale = false;
+        const sorted = Object.entries(categoryScores).filter(e => e[1]).sort((a, b) => b[1] - a[1]);
+        const top100 = sorted.slice(0, 100);
+        const bottom100 = sorted.slice(sorted.length-100).reverse();
+        document.getElementById("top100").innerText = top100.map(([k,v]) => `${convertCat(k)}: ${v}`).join("\n");
+        document.getElementById("bottom100").innerText = bottom100.map(([k,v]) => `${convertCat(k)}: ${v}`).join("\n");
+    }
+
+    function updateLikeStats() {
+        if (!likeStatsStale)
+            return;
+        likeStatsStale = false;
+        const likedPostsEl = document.getElementById("likedPosts");
+        likedPostsEl.innerText = "";
+        likedPosts.forEach(postId => {
+            const post = pagesArr.find(e=>e.id==postId);
+            const link = document.createElement(post ? "a" : "em");
+            link.classList.add("likedPostEntry");
+            if (post) {
+                link.innerText = post.title;
+                link.href = getArticleLink(post.title);
+            } else {
+                link.innerText = `Unknown post (id: ${postId})`;
+            }
+            likedPostsEl.appendChild(link);
+        });
+    }
+
+    function showStatsModal() {
+        statsModal.showModal();
+        topStatsStale = true;
+        likeStatsStale = true;
+        document.getElementById("generalStats").innerText = `Posts scrolled (total): ${seenPosts.length}\nPosts scrolled (session): ${seenPosts.length - likesLen}\nTime spent (total): ${textTime(timeSpentTotal)}\nTime spent (session): ${textTime(timeSpentSession)}`;
+        document.querySelectorAll("#statsModal details").forEach(e => e.open = false);
+    }
+
+    function showSettingsModal() {
+        settingsModal.showModal();
+    }
+
+    function showAboutModal() {
+        aboutModal.showModal();
+    }
+
+    const articleModal = document.getElementById("articleModal");
+    const articleContent = document.getElementById("articleContent");
+    const articleFooter = document.getElementById("articleFooter");
+
+    async function showArticle(event, title) {
+        if (event) event.stopPropagation();
+        articleModal.showModal();
+        articleContent.innerHTML = '<div class="article-loading">Loading article...</div>';
+        articleFooter.innerHTML = '';
+        try {
+            const wiki = settings.openMainWiki ? 'en' : 'simple';
+            const resp = await fetch(`https://${wiki}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`);
+            if (!resp.ok) throw new Error('Not found');
+            const data = await resp.json();
+            const thumbHtml = data.thumbnail ? `<img class="article-thumb" src="${data.thumbnail.source}" alt="${title}" loading="lazy" />` : '';
+            articleContent.innerHTML = `
+                <h1>${data.title}</h1>
+                <div class="article-extract">${data.extract_html || data.extract}</div>
+                ${thumbHtml}
+            `;
+            articleFooter.innerHTML = `
+                <a class="read-more" href="${getArticleLink(title)}" target="_blank" rel="noopener">Read on Wikipedia →</a>
+                <button class="share-article" onclick="navigator.share?navigator.share({title:'${title.replace(/'/g,"\\'")}',url:'${getArticleLink(title)}'}):navigator.clipboard.writeText('${getArticleLink(title)}')">Share</button>
+            `;
+        } catch (e) {
+            articleContent.innerHTML = `<div class="article-loading" style="color:var(--red)">Could not load article. <a href="${getArticleLink(title)}" target="_blank" rel="noopener" style="color:var(--blue)">Open on Wikipedia →</a></div>`;
+        }
+    }
+
+    function showRandomArticle() {
+        if (!pagesArr.length) return;
+        const post = pagesArr[Math.floor(Math.random() * pagesArr.length)];
+        showArticle(null, post.title);
+    }
+
+    function searchArticles(query) {
+        const el = document.getElementById("searchResults");
+        if (!query || query.length < 2) { el.classList.remove("show"); return; }
+        const q = query.toLowerCase();
+        const results = pagesArr.filter(p => p.title.toLowerCase().includes(q)).slice(0, 15);
+        if (!results.length) { el.classList.remove("show"); return; }
+        el.innerHTML = results.map(p => {
+            const cat = getCategoryLabel(p);
+            return `<div class="search-result-item" data-title="${p.title.replace(/"/g,'&quot;')}">${p.title} <span class="sr-cat">· ${cat}</span></div>`;
+        }).join('');
+        el.classList.add("show");
+        el.querySelectorAll(".search-result-item").forEach(item => {
+            item.onclick = () => {
+                el.classList.remove("show");
+                document.getElementById("searchInput").value = item.dataset.title;
+                showArticle(null, item.dataset.title);
+            };
+        });
+    }
+
+    document.addEventListener("click", (e) => {
+        const el = document.getElementById("searchResults");
+        if (el && !e.target.closest(".search-wrapper")) el.classList.remove("show");
+    });
+
+    function recursiveCategories(subCategories, categories, depth) {
+        const allCategories = new Set(categories);
+        categories.forEach(e => {
+            const cat = e?.toLowerCase?.();
+            if (!cat) return [];
+            const subs = (subCategories[cat] ?? []);
+            if (!subs.length)
+                return;
+            let cacheValue = recursiveCache.get(cat);
+            if (!cacheValue) {
+                recursiveCache.set(cat, -1);
+                cacheValue = recursiveCategories(subCategories, subs, depth + 1);
+                recursiveCache.set(cat, cacheValue);
+            } else if (cacheValue == -1) {
+                recursiveCache.set(cat, []);
+                cacheValue = recursiveCategories(subCategories, subs, depth + 1);
+                recursiveCache.set(cat, cacheValue);
+            }
+            allCategories.add(...subs);
+            allCategories.add(...cacheValue);
+        });
+        return new Set([...allCategories].map(e=>e?.toLowerCase?.()||e));
+    }
+
+    function convertCat(cat) {
+        if (cat.startsWith("p:")) {
+            cat = cat.slice(2);
+            return pagesArr.find(e=>e.id == cat)?.title ?? noPageMaps[cat] ?? cat;
+        }
+        return cat;
+    }
+
+    function engagePost(post, amount) {
+        post.allCategories.forEach(e => categoryScores[e] = (categoryScores[e] ?? 0) + amount);
+        return amount;
+    }
+
+    function showPic(imgName) {
+        const fullImg = document.createElement("img");
+        fullImg.src = `https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/${imgName.replace(/ /g, '_')}`;
+        fullImg.popover = "auto";
+        fullImg.classList.add("fullImg");
+        document.body.appendChild(fullImg);
+        fullImg.showPopover();
+        fullImg.ontoggle = (e) => e.newState === "open" || fullImg.remove();
+        fullImg.onclick = () => fullImg.hidePopover();
+    }
+
+    function getArticleLink(articleTitle) {
+        return `https://${settings.openMainWiki ? 'en' : 'simple'}.wikipedia.org/wiki/${articleTitle.replace(/ /g, '_')}`;
+    }
+
+    function getCategoryLabel(post) {
+        const cats = post.categories || [];
+        for (const cat of cats) {
+            const c = cat.toLowerCase();
+            if (c.includes("history")) return "History";
+            if (c.includes("culture")) return "Culture";
+            if (c.includes("geograph")) return "Geography";
+            if (c.includes("wildlife") || c.includes("animal")) return "Wildlife";
+            if (c.includes("sport")) return "Sport";
+            if (c.includes("music")) return "Music";
+            if (c.includes("people")) return "People";
+            if (c.includes("cuisine") || c.includes("food")) return "Food";
+            if (c.includes("language")) return "Language";
+            if (c.includes("economy") || c.includes("business")) return "Economy";
+        }
+        return "South Africa";
+    }
+
+    function createNextPost() {
+        const nextPost = getNextPost();
+        const post = document.createElement("article");
+        post.classList.add("post");
+
+        const cat = getCategoryLabel(nextPost);
+        const firstLetter = nextPost.title.charAt(0).toUpperCase();
+
+        let mediaHTML = "";
+        if (nextPost.thumb) {
+            mediaHTML = `<div class="post-media"><img src="https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/${nextPost.thumb.replace(/ /g, '_')}&width=512" loading="eager" onerror="this.parentElement.remove()" /></div>`;
+        }
+
+        post.innerHTML = `
+            <div class="post-avatar"><div class="avatar-placeholder">${firstLetter}</div></div>
+            <div class="post-body">
+                <div class="post-header">
+                    <span class="post-title">${nextPost.title}</span>
+                    <span class="post-category">· ${cat}</span>
+                </div>
+                <div class="post-text">${nextPost.text}</div>
+                ${mediaHTML}
+                <div class="post-actions">
+                    <button class="post-action comment-btn" title="Open article" data-title="${nextPost.title.replace(/"/g, '&quot;')}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </button>
+                    <button class="post-action like-btn" title="Like">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.06,21.01c3.94,0,13.77-11.36,8.56-16.37-4.59-4.41-8.61,1.58-8.61,1.58,0,0-4.02-5.99-8.61-1.58-5.22,5.01,4.61,16.37,8.56,16.37h.11Z"/></svg>
+                    </button>
+                    <button class="post-action share-btn" title="Share">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        post.onclick = () => {
+            showArticle(null, nextPost.title);
+            if (!post.dataset.engaged)
+                post.dataset.engaged = engagePost(nextPost, 75);
+        };
+
+        const commentBtn = post.querySelector(".comment-btn");
+        commentBtn.onclick = (e) => {
+            e.stopPropagation();
+            showArticle(e, nextPost.title);
+        };
+
+        const likeBtn = post.querySelector(".like-btn");
+        likeBtn.onclick = (e) => {
+            if (!likeBtn.dataset.liked) {
+                likeBtn.dataset.liked = true;
+                likeBtn.classList.add("liked");
+                likedPosts.push(nextPost.id);
+            }
+            if (!likeBtn.dataset.engaged)
+                likeBtn.dataset.engaged = engagePost(nextPost, 50 + postsWithoutLike*4);
+            postsWithoutLike = 0;
+            setTimeout(saveProfile, 100);
+            e.stopPropagation();
+        };
+
+        const shareBtn = post.querySelector(".share-btn");
+        shareBtn.onclick = (e) => {
+            e.stopPropagation();
+            const url = getArticleLink(nextPost.title);
+            const text = `${nextPost.title} — MzansiPedia`;
+            if (navigator.share) {
+                navigator.share({ title: nextPost.title, text, url }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(url).then(() => {
+                    shareBtn.title = "Copied!";
+                    setTimeout(() => shareBtn.title = "Share", 1500);
+                });
+            }
+        };
+
+        if (nextPost.thumb) {
+            const img = post.querySelector(".post-media img");
+            if (img) {
+                img.onclick = (e) => {
+                    showPic(nextPost.thumb);
+                    if (!img.dataset.engaged)
+                        img.dataset.engaged = engagePost(nextPost, 100);
+                    e.stopPropagation();
+                };
+            }
+        }
+
+        engagePost(nextPost, -5);
+        postsWithoutLike++;
+        document.querySelector(".posts").appendChild(post);
+
+        fetchLiveText(post, nextPost.title);
+    }
+
+    function fetchLiveText(post, title) {
+        const wiki = settings.openMainWiki ? 'en' : 'simple';
+        fetch(`https://${wiki}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`)
+            .then(r => r.ok ? r.json() : null)
+            .then(data => {
+                if (!data || !data.extract) return;
+                const textEl = post.querySelector(".post-text");
+                if (textEl) textEl.textContent = data.extract;
+            })
+            .catch(() => {});
+    }
+
+    function getNextPost() {
+        const potentialPosts = [...Array(10000)].map(e=>pagesArr[Math.floor(Math.random()*pagesArr.length)]).map(post => {
+            const initialScore = (post.thumb ? 5 : 0) + (3**(post.seen??0)-1)*-50000;
+            const postScore = [...post.allCategories].reduce((sum, cat) => sum + (categoryScores[cat]??0), initialScore);
+            post.score = postScore;
+            return post;
+        });
+
+        let highestScore = -Infinity;
+        let bestPost = potentialPosts[0];
+
+        if (Math.random() < 0.4) {
+            const minScore = Math.min(...potentialPosts.map(e => e.score));
+            const maxScore = potentialPosts.reduce((sum, post) => sum + post.score - minScore, 0);
+            const targetScore = Math.random()*maxScore;
+            let scoreCount = 0;
+        
+            while (scoreCount < targetScore && potentialPosts.length) {
+                const potentialPost = potentialPosts.pop();
+                bestPost = potentialPost;
+                scoreCount += potentialPost.score - minScore;
+            }
+        } else if (Math.random()>0.3)
+            potentialPosts.forEach(post => {
+                if (post.score > highestScore) {
+                    bestPost = post;
+                    highestScore = post.score;
+                }
+            });
+        bestPost.seen = (bestPost.seen??0) + 1;
+        seenPosts.push(bestPost.id);
+        const timeSpent = Math.min(10000, Date.now() - lastSpentTime);
+        lastSpentTime = Date.now();
+        timeSpentTotal += timeSpent;
+        timeSpentSession += timeSpent;
+        return bestPost;
+    }
+
+    function render() {
+        if (document.documentElement.scrollHeight < scrollY+innerHeight + 1500)
+            createNextPost();
+        requestAnimationFrame(render);
+    }
+
+    function addPickableCategory(cat, checked) {
+        if (document.querySelector(`.categoryPicker input[data-category="${cat.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"]`))
+            return;
+        const picker = document.createElement("label");
+        const check = document.createElement("input");
+        check.type = "checkbox";
+        picker.innerText = `${cat.slice(0,1).toUpperCase()}${cat.slice(1).toLowerCase()}`;
+        picker.appendChild(check);
+        picker.classList.add("categoryPicker");
+        check.dataset.category = cat;
+        if (checked)
+            check.checked = true;
+        categoryPickList.appendChild(picker);
+    }
+
+async function* streamToAsyncIterable(stream) {
+  const reader = stream.getReader()
+  try {
+    while (true) {
+      const {done, value} = await reader.read()
+      if (done) return
+      yield value
+    }
+  } finally {
+    reader.releaseLock()
+  }
+}
+
+    let lastBytesProgress = 0;
+    function updateProgress(bytesProgress) {
+        if (Math.floor(lastBytesProgress/DATA_SIZE*100) < Math.floor(bytesProgress/DATA_SIZE*100)) {
+            loadStatus(`${Math.floor(bytesProgress/DATA_SIZE*100)}% loaded`)
+            lastBytesProgress = bytesProgress;
+        }
+    }
+
+    async function getFileWithProgress(url) {
+        const resp = await fetch(url, {cache: "force-cache"});
+        let responseSize = 0;
+        const bytes = new Uint8Array(DATA_SIZE);
+        for await (const chunk of streamToAsyncIterable(resp.body)) {
+            if (Math.floor(responseSize/DATA_SIZE*100) < Math.floor((responseSize+chunk.length)/DATA_SIZE*100))
+                startBtn.innerText = `Loading... (${Math.floor(responseSize/DATA_SIZE*100)}%)`;
+            bytes.set(chunk, responseSize);
+            responseSize += chunk.length;
+        }
+        startBtn.innerText = `Loading... (100%)`;
+        await new Promise(requestAnimationFrame);
+        await new Promise(requestAnimationFrame);
+        return JSON.parse(new TextDecoder().decode(bytes));
+    }
+
+    async function checkVersionAsync() {
+        try {
+            const versionInfo = await (await fetch("version.json", {cache: "no-store"})).json();
+            if (versionInfo.html != HTML_VERSION) {
+                if (window.swReg) {
+                    const res = await (await fetch("clearHtml")).text();
+                    console.log(res);
+                }
+                document.location.reload();
+            }
+            if (window.swReg) {
+                const swVer = await (await fetch("swVer")).text();
+                if (versionInfo.sw != swVer) {
+                    await window.swReg.update();
+                    document.location.reload();
+                }
+            }
+        } catch (e) {
+            console.error("Couldn't check versions", e);
+        }
+    }
+
+    function loadStatus(text) {
+        startBtn.innerText = `Loading... (${text})`;
+        const loading = document.querySelector("#loading");
+        if (loading)
+            loading.innerText = `Loading...\n(${text})`;
+    }
+
+    let downloadFinished = false;
+    async function main() {
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent))
+            document.getElementById("iosmessage").style.display = "block";
+        loadStatus("loading profile");
+        const hasProfile = initProfile();
+        if (hasProfile)
+            startScreen.style.display = "none";
+        else
+            startScreen.showPopover();
+        defaultCategories.forEach(e=>addPickableCategory(e));
+        loadStatus("waiting for service worker");
+        for (let i = 0; i<500; i++) {
+            if (window.swReg && (swReg == "err" || window.swReg?.active)) break;
+            await new Promise(r => setTimeout(r, 10));
+        }
+        checkVersionAsync();
+        loadStatus("loading data");
+        const smoldata = await getFileWithProgress(DATA_URL);
+        downloadFinished = true;
+
+        const subCategories = smoldata.subCategories;
+        noPageMaps = smoldata.noPageMaps;
+        delete smoldata.subCategories;
+        delete smoldata.noPageMaps;
+
+        let i = 0;
+        const wikiLen = smoldata.pages.length;
+        console.log(wikiLen);
+        const loading = document.querySelector("#loading");
+        let lastFrame = Date.now();
+        while (smoldata.pages.length) {
+            const e = smoldata.pages.pop();
+            const tempPage = {title:e[0],id:e[1],text:e[2],thumb:e[3],categories:e[4],links:e[5]};
+            if (i % 1000 == 0 && Date.now() - lastFrame > 20) {
+                loadStatus(`${(i/wikiLen*100).toFixed(0)}%`);
+                await new Promise(e => requestAnimationFrame(e));
+            }
+            i++;
+            tempPage.allCategories = new Set(recursiveCategories(subCategories, [...tempPage.categories], 0));
+            tempPage.allCategories.add(`p:${tempPage.id}`);
+            tempPage.allCategories.add(...tempPage.links.map(e=>`p:${e}`));
+            pagesArr.push(tempPage);
+        }
+        loadStatus("Loaded");
+        if (loading) loading.remove();
+        startBtn.removeAttribute("disabled");
+        categorySearchInput.removeAttribute("disabled");
+        startBtn.innerText = "I'm ready, explore Mzansi";
+        startBtn.onclick = () => {
+            document.querySelectorAll(".categoryPicker>input:checked").forEach(e => categoryScores[e.dataset.category] = defaultCategories.includes(e.dataset.category) ? 1000 : 5000);
+            document.querySelectorAll(".categoryPicker>input:checked").forEach(e => {
+                if (defaultCategories.includes(e.dataset.category)) return;
+                const page = pagesArr.find(x=>x.title.toLowerCase()==e.dataset.category);
+                if (page)
+                    engagePost(page, 100);
+            });
+            startScreen.hidePopover();
+            startScreen.remove();
+            setTimeout(saveProfile,100);
+            document.querySelector('meta[name="theme-color"]').setAttribute("content", "#000000");
+            requestAnimationFrame(render);
+        }
+        initProfile();
+        if (hasProfile) {
+            startScreen.remove();
+            setTimeout(saveProfile,100);
+            document.querySelector('meta[name="theme-color"]').setAttribute("content", "#000000");
+            requestAnimationFrame(render);
+        }
+    }
+
+    window.onload = main;
+</script>
+</body>
+</html>

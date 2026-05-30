@@ -1,0 +1,8 @@
+# Large Wikipedia dump files
+simplewiki-*.xml
+simplewiki-*.xml.bz2
+simplewiki-*.sql
+simplewiki-*.sql.gz
+
+# Uncompressed data (compressed .br version is used in production)
+smoldata.json
