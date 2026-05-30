@@ -1058,7 +1058,7 @@
     const defaultCategories = ["history of south africa", "south african culture", "geography of south africa", "south african wildlife", "south african sport", "south african cuisine", "south african music", "south african people", "apartheid in south africa", "south african languages", "south african fashion", "south african art"];
     let postsWithoutLike = 0;
 
-    const HTML_VERSION = "2.0.0";
+    const HTML_VERSION = "2.1.1";
 
     function loadSettings() {
         const baseSettings = {
@@ -1660,19 +1660,12 @@ async function* streamToAsyncIterable(stream) {
     }
 
     async function getFileWithProgress(url) {
-        const resp = await fetch(url, {cache: "force-cache"});
-        let responseSize = 0;
-        const bytes = new Uint8Array(DATA_SIZE);
-        for await (const chunk of streamToAsyncIterable(resp.body)) {
-            if (Math.floor(responseSize/DATA_SIZE*100) < Math.floor((responseSize+chunk.length)/DATA_SIZE*100))
-                startBtn.innerText = `Loading... (${Math.floor(responseSize/DATA_SIZE*100)}%)`;
-            bytes.set(chunk, responseSize);
-            responseSize += chunk.length;
-        }
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const text = await resp.text();
         startBtn.innerText = `Loading... (100%)`;
         await new Promise(requestAnimationFrame);
-        await new Promise(requestAnimationFrame);
-        return JSON.parse(new TextDecoder().decode(bytes));
+        return JSON.parse(text);
     }
 
     async function checkVersionAsync() {
@@ -1683,6 +1676,19 @@ async function* streamToAsyncIterable(stream) {
                     const res = await (await fetch("clearHtml")).text();
                     console.log(res);
                 }
+                document.location.reload();
+            }
+            if (window.swReg) {
+                const swVer = await (await fetch("swVer")).text();
+                if (versionInfo.sw != swVer) {
+                    await window.swReg.update();
+                    document.location.reload();
+                }
+            }
+        } catch (e) {
+            console.error("Couldn't check versions", e);
+        }
+    }
                 document.location.reload();
             }
             if (window.swReg) {
