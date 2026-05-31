@@ -137,6 +137,8 @@
             transition: background 0.2s;
             position: relative;
             white-space: nowrap;
+            border: none;
+            background: transparent;
         }
         .feed-tab:hover { background: var(--bg-hover); }
         .feed-tab.active {
@@ -256,6 +258,9 @@
         .post-action.like-btn.liked { color: #F91880; }
         .post-action.like-btn.liked svg { fill: #F91880; }
         .post-action.share-btn:hover { color: var(--green); background: rgba(0,119,73,0.1); }
+        .post-action.save-btn:hover { color: var(--gold); background: rgba(255,184,28,0.1); }
+        .post-action.save-btn.saved { color: var(--gold); }
+        .post-action.save-btn.saved svg { fill: rgba(255,184,28,0.18); }
 
         /* === RIGHT SIDEBAR === */
         .right-panel {
@@ -794,22 +799,79 @@
         }
         .article-footer {
             display: flex;
+            flex-wrap: wrap;
             gap: 8px;
             padding: 16px 24px;
             border-top: 1px solid var(--border);
         }
-        .article-footer a {
+        .article-footer a,
+        .article-footer button {
             flex: 1;
             text-align: center;
             padding: 10px;
             border-radius: 9999px;
             font-weight: 600;
             font-size: 14px;
+            font-family: inherit;
+            line-height: 1.2;
+            min-width: 132px;
         }
         .article-footer .read-more { background: var(--green); color: #FFF; }
         .article-footer .read-more:hover { background: #005D39; text-decoration: none; }
-        .article-footer .share-article { background: transparent; border: 1px solid var(--border); color: var(--text-primary); cursor: pointer; }
-        .article-footer .share-article:hover { background: var(--bg-hover); }
+        .article-footer button { background: transparent; border: 1px solid var(--border); color: var(--text-primary); cursor: pointer; }
+        .article-footer button:hover { background: var(--bg-hover); }
+        .article-trails {
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+        }
+        .article-trails h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .trail-list {
+            display: grid;
+            gap: 8px;
+        }
+        .trail-link {
+            width: 100%;
+            text-align: left;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg);
+            color: var(--text-primary);
+            padding: 10px 12px;
+            cursor: pointer;
+        }
+        .trail-link:hover { background: var(--bg-hover); }
+        .trail-link span {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-top: 2px;
+        }
+        .collection-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            background: rgba(5,8,6,0.38);
+        }
+        .collection-card h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .collection-entry {
+            display: block;
+            padding: 7px 0;
+            color: var(--text-primary);
+            font-size: 14px;
+            border-top: 1px solid rgba(255,255,255,0.04);
+        }
+        .collection-empty {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
 
         /* === ANIMATIONS === */
         @keyframes fadeInUp {
@@ -865,6 +927,10 @@
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.591 7.146L12.52 1.157c-.316-.21-.724-.21-1.04 0l-9.071 5.99c-.26.173-.409.456-.409.757v13.183c0 .502.418.913.929.913h6.638c.511 0 .929-.41.929-.913v-7.075h3.008v7.075c0 .502.418.913.929.913h6.638c.511 0 .929-.41.929-.913V7.904c0-.301-.158-.584-.408-.758z"/></svg>
                 <span>Home</span>
             </a>
+            <a onclick="showCollectionsModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                <span>Collections</span>
+            </a>
             <a onclick="showStatsModal()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
                 <span>Stats</span>
@@ -889,8 +955,14 @@
         <div class="feed-header">
             <div class="feed-header-title">MzansiPedia</div>
             <div class="feed-tabs">
-                <div class="feed-tab active">For you</div>
-                <div class="feed-tab" onclick="showAboutModal()">About</div>
+                <button class="feed-tab active" data-filter="for-you">For you</button>
+                <button class="feed-tab" data-filter="history">History</button>
+                <button class="feed-tab" data-filter="people">People</button>
+                <button class="feed-tab" data-filter="places">Places</button>
+                <button class="feed-tab" data-filter="culture">Culture</button>
+                <button class="feed-tab" data-filter="wildlife">Wildlife</button>
+                <button class="feed-tab" data-filter="sport">Sport</button>
+                <button class="feed-tab" onclick="showAboutModal()">About</button>
             </div>
         </div>
         <div class="posts"></div>
@@ -940,6 +1012,9 @@
             </button>
             <button onclick="showStatsModal()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+            </button>
+            <button onclick="showCollectionsModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
             </button>
             <button onclick="showProfilesModal()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -1005,6 +1080,18 @@
             <details ontoggle=updateTopStats()><summary>Top categories</summary><div id="top100"></div></details>
             <details ontoggle=updateTopStats()><summary>Bottom categories</summary><div id="bottom100"></div></details>
             <details ontoggle=updateLikeStats()><summary>Liked posts</summary><div id="likedPosts"></div></details>
+        </div>
+    </dialog>
+
+    <dialog class="modal" id="collectionsModal" closedby=any>
+        <div class="modal-header">
+            <h2>Collections</h2>
+            <button class="closeBtn" aria-label="Close" onclick="collectionsModal.close()">X</button>
+        </div>
+        <div class="modal-body">
+            <p>Save articles you want to revisit. Collections stay in this browser profile.</p>
+            <div id="collectionsList"></div>
+            <button class="modal-btn modal-btn-primary" onclick="createCollection()">New collection</button>
         </div>
     </dialog>
 
@@ -1100,17 +1187,29 @@
     };
     let seenPosts = [];
     let likedPosts = [];
+    let collections = {};
     let likesLen = 0;
     let timeSpentSession = 0;
     let timeSpentTotal = 0;
     let profileName = "Default";
+    let activeFeedFilter = "for-you";
 
     let lastSpentTime = Date.now();
 
     const defaultCategories = ["history of south africa", "south african culture", "geography of south africa", "south african wildlife", "south african sport", "south african cuisine", "south african music", "south african people", "apartheid in south africa", "south african languages", "south african fashion", "south african art"];
     let postsWithoutLike = 0;
 
-    const HTML_VERSION = "2.2.0";
+    const HTML_VERSION = "2.3.0";
+
+    const feedFilters = {
+        "for-you": [],
+        history: ["history", "apartheid", "war", "colonial", "republic", "kingdom"],
+        people: ["people", "births", "deaths", "politician", "artist", "writer", "singer", "player", "actor"],
+        places: ["geography", "cities", "towns", "province", "municipality", "rivers", "mountains", "south africa"],
+        culture: ["culture", "music", "art", "language", "food", "cuisine", "fashion", "film"],
+        wildlife: ["wildlife", "animal", "bird", "plant", "conservation", "national park"],
+        sport: ["sport", "rugby", "cricket", "football", "athlete", "olympic"],
+    };
 
     function escapeHTML(value) {
         return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -1183,6 +1282,7 @@
 
     const profilesModal = document.getElementById("profilesModal");
     const statsModal = document.getElementById("statsModal");
+    const collectionsModal = document.getElementById("collectionsModal");
     const settingsModal = document.getElementById("settingsModal");
     const aboutModal = document.getElementById("aboutModal");
 
@@ -1238,6 +1338,9 @@
             },
             seenPosts: [],
             likedPosts: [],
+            collections: {
+                Saved: [],
+            },
             timeSpentTotal: 0,
         }
         const loadedProfile = JSON.parse(localStorage.getItem(`mzansipedia-profile-${profileId}`) ?? "{}");
@@ -1245,6 +1348,7 @@
         categoryScores = profile.categoryScores;
         seenPosts = profile.seenPosts;
         likedPosts = profile.likedPosts;
+        collections = normalizeCollections(profile.collections);
         timeSpentTotal = profile.timeSpentTotal;
         profileName = profile.profileName;
         pagesArr.filter(e=>e.seen).forEach(e=>e.seen=0);
@@ -1271,9 +1375,69 @@
             categoryScores,
             seenPosts,
             likedPosts,
+            collections,
             timeSpentTotal,
         }
         localStorage.setItem(`mzansipedia-profile-${settings.profile}`, JSON.stringify(profile));
+    }
+
+    function normalizeCollections(value) {
+        const normalized = {};
+        Object.entries(value || {}).forEach(([name, ids]) => {
+            const cleanName = String(name || "").trim();
+            if (!cleanName) return;
+            normalized[cleanName] = [...new Set((Array.isArray(ids) ? ids : []).map(Number).filter(Boolean))];
+        });
+        if (!normalized.Saved)
+            normalized.Saved = [];
+        return normalized;
+    }
+
+    function getPostById(postId) {
+        return pagesArr.find(post => post.id == postId);
+    }
+
+    function getPostByTitle(title) {
+        return pagesArr.find(post => post.title.toLowerCase() == String(title || "").toLowerCase());
+    }
+
+    function isPostSaved(postId, collectionName = "Saved") {
+        return (collections[collectionName] || []).includes(Number(postId));
+    }
+
+    function savePostToCollection(postId, collectionName = "Saved") {
+        const cleanName = String(collectionName || "Saved").trim() || "Saved";
+        if (!collections[cleanName])
+            collections[cleanName] = [];
+        const id = Number(postId);
+        if (id && !collections[cleanName].includes(id))
+            collections[cleanName].push(id);
+        saveProfile();
+    }
+
+    function toggleSavedPost(post, button) {
+        if (!post) return;
+        const id = Number(post.id);
+        if (isPostSaved(id)) {
+            collections.Saved = collections.Saved.filter(savedId => savedId != id);
+            button?.classList.remove("saved");
+            if (button) button.title = "Save";
+        } else {
+            savePostToCollection(id);
+            button?.classList.add("saved");
+            if (button) button.title = "Saved";
+        }
+        saveProfile();
+    }
+
+    function saveArticleToCollection(title, button) {
+        const post = getPostByTitle(title);
+        if (!post) return;
+        savePostToCollection(post.id, "Saved");
+        if (button) {
+            button.textContent = "Saved";
+            setTimeout(() => button.textContent = "Save", 1400);
+        }
     }
 
     function addProfile(newProfileName) {
@@ -1341,6 +1505,57 @@
             }
         }
         profilesList.appendChild(addProfileButton);
+    }
+
+    function showCollectionsModal() {
+        collectionsModal.showModal();
+        renderCollections();
+    }
+
+    function renderCollections() {
+        const list = document.getElementById("collectionsList");
+        list.innerText = "";
+        Object.entries(normalizeCollections(collections)).forEach(([name, ids]) => {
+            const card = document.createElement("section");
+            card.className = "collection-card";
+            const heading = document.createElement("h3");
+            heading.textContent = `${name} (${ids.length})`;
+            card.appendChild(heading);
+            if (!ids.length) {
+                const empty = document.createElement("p");
+                empty.className = "collection-empty";
+                empty.textContent = "No saved articles yet.";
+                card.appendChild(empty);
+            }
+            ids.forEach(postId => {
+                const post = getPostById(postId);
+                const link = document.createElement(post ? "a" : "em");
+                link.className = "collection-entry";
+                if (post) {
+                    link.href = getArticleLink(post.title);
+                    link.textContent = post.title;
+                    link.onclick = event => {
+                        event.preventDefault();
+                        collectionsModal.close();
+                        showArticle(null, post.title);
+                    };
+                } else {
+                    link.textContent = `Unavailable article (${postId})`;
+                }
+                card.appendChild(link);
+            });
+            list.appendChild(card);
+        });
+    }
+
+    function createCollection() {
+        const name = prompt("Collection name");
+        if (!name || !name.trim()) return;
+        const cleanName = name.trim();
+        if (!collections[cleanName])
+            collections[cleanName] = [];
+        saveProfile();
+        renderCollections();
     }
 
     function textTime(ms) {
@@ -1413,7 +1628,9 @@
 
     async function showArticle(event, title) {
         if (event) event.stopPropagation();
-        articleModal.showModal();
+        if (!articleModal.open)
+            articleModal.showModal();
+        document.getElementById("articleModalTitle").textContent = "Reader";
         articleContent.innerHTML = '<div class="article-loading">Loading article...</div>';
         articleFooter.innerHTML = '';
         try {
@@ -1429,15 +1646,76 @@
                 <h1>${safeTitle}</h1>
                 <div class="article-extract">${extract}</div>
                 ${thumbHtml}
+                ${renderArticleTrails(title)}
             `;
             articleFooter.innerHTML = `
                 <a class="read-more" href="${escapeAttr(articleUrl)}" target="_blank" rel="noopener">Read on Wikipedia</a>
+                <button class="save-article" type="button">Save</button>
+                <button class="card-article" type="button">Make card</button>
                 <button class="share-article" type="button">Share link</button>
             `;
+            articleContent.querySelectorAll(".trail-link").forEach(button => {
+                button.onclick = () => showArticle(null, button.dataset.title);
+            });
+            articleFooter.querySelector(".save-article").onclick = () => saveArticleToCollection(title, articleFooter.querySelector(".save-article"));
+            articleFooter.querySelector(".card-article").onclick = () => createShareCard(data.title || title, data.extract || "");
             articleFooter.querySelector(".share-article").onclick = () => shareLink(data.title || title, articleUrl, articleFooter.querySelector(".share-article"));
         } catch (e) {
-            articleContent.innerHTML = `<div class="article-loading load-error">Could not load article. <a href="${escapeAttr(getArticleLink(title))}" target="_blank" rel="noopener">Open on Wikipedia</a></div>`;
+            const localPost = getPostByTitle(title);
+            const fallbackText = localPost?.text || "Live Wikipedia text is unavailable right now. The source link still opens the article when it is available.";
+            articleContent.innerHTML = `
+                <h1>${escapeHTML(title)}</h1>
+                <div class="article-extract">${escapeHTML(fallbackText)}</div>
+                <p class="load-error">Live article text could not load.</p>
+                ${renderArticleTrails(title)}
+            `;
+            articleFooter.innerHTML = `
+                <a class="read-more" href="${escapeAttr(getArticleLink(title))}" target="_blank" rel="noopener">Read on Wikipedia</a>
+                <button class="save-article" type="button">Save</button>
+                <button class="card-article" type="button">Make card</button>
+                <button class="share-article" type="button">Share link</button>
+            `;
+            articleContent.querySelectorAll(".trail-link").forEach(button => {
+                button.onclick = () => showArticle(null, button.dataset.title);
+            });
+            articleFooter.querySelector(".save-article").onclick = () => saveArticleToCollection(title, articleFooter.querySelector(".save-article"));
+            articleFooter.querySelector(".card-article").onclick = () => createShareCard(title, fallbackText);
+            articleFooter.querySelector(".share-article").onclick = () => shareLink(title, getArticleLink(title), articleFooter.querySelector(".share-article"));
         }
+    }
+
+    function renderArticleTrails(title) {
+        const trails = getArticleTrail(title);
+        if (!trails.length) return "";
+        return `
+            <div class="article-trails">
+                <h3>Read next</h3>
+                <div class="trail-list">
+                    ${trails.map(post => `<button class="trail-link" type="button" data-title="${escapeAttr(post.title)}">${escapeHTML(post.title)}<span>${escapeHTML(getCategoryLabel(post))}</span></button>`).join("")}
+                </div>
+            </div>
+        `;
+    }
+
+    function getArticleTrail(title) {
+        const source = getPostByTitle(title);
+        if (!source?.allCategories) return [];
+        const sourceCats = source.allCategories;
+        return pagesArr
+            .filter(post => post.id !== source.id && post.allCategories)
+            .map(post => {
+                let score = 0;
+                post.allCategories.forEach(cat => {
+                    if (sourceCats.has(cat)) score++;
+                });
+                if (source.links?.includes(post.id)) score += 6;
+                if (post.links?.includes(source.id)) score += 6;
+                return { post, score };
+            })
+            .filter(item => item.score > 1)
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 3)
+            .map(item => item.post);
     }
 
     function shareLink(title, url, button) {
@@ -1451,6 +1729,72 @@
             button.textContent = "Link copied";
             setTimeout(() => button.textContent = previousText, 1500);
         });
+    }
+
+    function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+        const words = String(text || "").replace(/\s+/g, " ").trim().split(" ");
+        let line = "";
+        let lines = 0;
+        for (const word of words) {
+            const testLine = line ? `${line} ${word}` : word;
+            if (ctx.measureText(testLine).width > maxWidth && line) {
+                ctx.fillText(line, x, y);
+                y += lineHeight;
+                lines++;
+                line = word;
+                if (lines >= maxLines - 1) break;
+            } else {
+                line = testLine;
+            }
+        }
+        if (line && lines < maxLines)
+            ctx.fillText(line.length > 120 ? `${line.slice(0, 117)}...` : line, x, y);
+    }
+
+    function createShareCard(title, extract) {
+        const canvas = document.createElement("canvas");
+        canvas.width = 1080;
+        canvas.height = 1350;
+        const ctx = canvas.getContext("2d");
+        const gradient = ctx.createLinearGradient(0, 0, 1080, 1350);
+        gradient.addColorStop(0, "#07150C");
+        gradient.addColorStop(0.58, "#050806");
+        gradient.addColorStop(1, "#18211B");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#007749";
+        ctx.fillRect(0, 0, 24, canvas.height);
+        ctx.fillStyle = "#FFB81C";
+        ctx.fillRect(24, 0, 10, canvas.height);
+        ctx.fillStyle = "#F1F3EE";
+        ctx.font = "800 76px Segoe UI, sans-serif";
+        wrapCanvasText(ctx, title, 92, 180, 900, 86, 4);
+        ctx.fillStyle = "#C9D0C8";
+        ctx.font = "400 36px Segoe UI, sans-serif";
+        wrapCanvasText(ctx, extract, 92, 600, 900, 54, 8);
+        ctx.fillStyle = "#A2ABA3";
+        ctx.font = "700 34px Segoe UI, sans-serif";
+        ctx.fillText("MzansiPedia", 92, 1200);
+        ctx.font = "400 26px Segoe UI, sans-serif";
+        ctx.fillText("South African Wikipedia stories", 92, 1242);
+        canvas.toBlob(blob => {
+            if (!blob) return;
+            const file = new File([blob], "mzansipedia-card.png", { type: "image/png" });
+            if (navigator.canShare?.({ files: [file] }) && navigator.share) {
+                navigator.share({ files: [file], title }).catch(() => downloadShareCard(blob));
+            } else {
+                downloadShareCard(blob);
+            }
+        }, "image/png");
+    }
+
+    function downloadShareCard(blob) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "mzansipedia-card.png";
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
     function showRandomArticle() {
@@ -1472,6 +1816,24 @@
                 }
             };
         });
+    }
+
+    function initFeedTabs() {
+        document.querySelectorAll(".feed-tab[data-filter]").forEach(tab => {
+            tab.onclick = () => {
+                activeFeedFilter = tab.dataset.filter;
+                document.querySelectorAll(".feed-tab[data-filter]").forEach(item => item.classList.toggle("active", item === tab));
+                resetFeed();
+            };
+        });
+    }
+
+    function resetFeed() {
+        if (!pagesArr.length) return;
+        document.querySelector(".posts").innerText = "";
+        window.scrollTo(0, 0);
+        for (let i = 0; i < 6; i++)
+            createNextPost();
     }
 
     function searchArticles(query) {
@@ -1596,6 +1958,9 @@
                     <button class="post-action like-btn" title="Like" aria-label="Like article">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.06,21.01c3.94,0,13.77-11.36,8.56-16.37-4.59-4.41-8.61,1.58-8.61,1.58,0,0-4.02-5.99-8.61-1.58-5.22,5.01,4.61,16.37,8.56,16.37h.11Z"/></svg>
                     </button>
+                    <button class="post-action save-btn ${isPostSaved(nextPost.id) ? 'saved' : ''}" title="${isPostSaved(nextPost.id) ? 'Saved' : 'Save'}" aria-label="Save article">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                    </button>
                     <button class="post-action share-btn" title="Share" aria-label="Share article">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                     </button>
@@ -1620,13 +1985,20 @@
             if (!likeBtn.dataset.liked) {
                 likeBtn.dataset.liked = true;
                 likeBtn.classList.add("liked");
-                likedPosts.push(nextPost.id);
+                if (!likedPosts.includes(nextPost.id))
+                    likedPosts.push(nextPost.id);
             }
             if (!likeBtn.dataset.engaged)
                 likeBtn.dataset.engaged = engagePost(nextPost, 50 + postsWithoutLike*4);
             postsWithoutLike = 0;
             setTimeout(saveProfile, 100);
             e.stopPropagation();
+        };
+
+        const saveBtn = post.querySelector(".save-btn");
+        saveBtn.onclick = (e) => {
+            e.stopPropagation();
+            toggleSavedPost(nextPost, saveBtn);
         };
 
         const shareBtn = post.querySelector(".share-btn");
@@ -1672,7 +2044,8 @@
     }
 
     function getNextPost() {
-        const potentialPosts = [...Array(10000)].map(e=>pagesArr[Math.floor(Math.random()*pagesArr.length)]).map(post => {
+        const sourcePosts = getFeedPool();
+        const potentialPosts = [...Array(10000)].map(e=>sourcePosts[Math.floor(Math.random()*sourcePosts.length)]).map(post => {
             const initialScore = (post.thumb ? 5 : 0) + (3**(post.seen??0)-1)*-50000;
             const postScore = [...post.allCategories].reduce((sum, cat) => sum + (categoryScores[cat]??0), initialScore);
             post.score = postScore;
@@ -1707,6 +2080,25 @@
         timeSpentTotal += timeSpent;
         timeSpentSession += timeSpent;
         return bestPost;
+    }
+
+    function getFeedPool() {
+        if (activeFeedFilter == "for-you")
+            return pagesArr;
+        const filtered = pagesArr.filter(post => postMatchesFeedFilter(post, activeFeedFilter));
+        return filtered.length ? filtered : pagesArr;
+    }
+
+    function postMatchesFeedFilter(post, filterName) {
+        const terms = feedFilters[filterName] || [];
+        if (!terms.length) return true;
+        const haystack = [
+            post.title,
+            post.text,
+            ...(post.categories || []),
+            ...[...(post.allCategories || [])],
+        ].join(" ").toLowerCase();
+        return terms.some(term => haystack.includes(term));
     }
 
     function render() {
@@ -1847,6 +2239,7 @@ async function* streamToAsyncIterable(stream) {
         categorySearchInput.removeAttribute("disabled");
         startBtn.innerText = "Start reading";
         initStartingPointLinks();
+        initFeedTabs();
         startBtn.onclick = () => {
             document.querySelectorAll(".categoryPicker>input:checked").forEach(e => categoryScores[e.dataset.category] = defaultCategories.includes(e.dataset.category) ? 1000 : 5000);
             document.querySelectorAll(".categoryPicker>input:checked").forEach(e => {

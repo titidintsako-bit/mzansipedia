@@ -1,4 +1,4 @@
-const SW_VERSION = '2.2.0';
+const SW_VERSION = '2.3.0';
 
 self.addEventListener('install', () => {
   self.skipWaiting();

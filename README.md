@@ -20,6 +20,9 @@ Your likes, profile, and ranking scores stay in browser storage. The bundled dat
 - The algorithm (simple point-scoring based on categories you engage with) picks what to show next.
 - Cards show bundled summaries instantly, then fetch fresh text from Wikipedia's live API when online.
 - Click a card to open the full article reader with live Wikipedia content.
+- Filter the feed by topic lenses such as History, People, Places, Culture, Wildlife, and Sport.
+- Save articles into local collections and generate shareable knowledge cards.
+- Article pages suggest related follow-up reads from the local dataset.
 
 ## Algorithm
 
