@@ -2,7 +2,8 @@
   "short_name": "Mzansi",
   "name": "MzansiPedia",
   "description": "A local-first feed of South African Wikipedia stories, places, people, culture, sport, wildlife, and history.",
-  "start_url": "/",
+  "start_url": "./",
+  "scope": "./",
   "icons": [
     {
       "src": "favicon-48.png",
