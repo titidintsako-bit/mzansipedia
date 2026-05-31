@@ -1,23 +1,24 @@
 # MzansiPedia
 
-South African stories, history & culture — in a social media feed.
+South African Wikipedia stories in a local-first reading feed.
 
 ## About
 
-MzansiPedia is a pseudo social media feed that algorithmically shows you content from [Simple Wikipedia](https://simple.wikipedia.org/) — filtered to only South African stories, history, culture, wildlife, and people. The algorithm runs locally on your device and no data leaves your browser.
+MzansiPedia turns South African Wikipedia topics into a reading feed. It is filtered toward South African history, culture, places, people, sport, wildlife, languages, and food.
 
-Once loaded, it works fully offline and can be installed as a PWA.
+Your likes, profile, and ranking scores stay in browser storage. The bundled dataset works offline after it loads; live article summaries and images are requested from Wikipedia and Wikimedia when a network is available.
 
 ## Try it
 
-👉 [mzansipedia.org](https://mzansipedia.org) (or [GitHub Pages mirror](https://titidintsako-bit.github.io/mzansipedia/))
+- [Vercel](https://mzansipedia.vercel.app/)
+- [GitHub Pages mirror](https://titidintsako-bit.github.io/mzansipedia/)
 
 ## How it works
 
 - A dataset of ~764 South African-themed Wikipedia articles is loaded once.
 - Articles are shown as tweet-style cards in an infinite vertical feed.
 - The algorithm (simple point-scoring based on categories you engage with) picks what to show next.
-- Cards show cached summaries instantly, then fetch fresh text from Wikipedia's live API.
+- Cards show bundled summaries instantly, then fetch fresh text from Wikipedia's live API when online.
 - Click a card to open the full article reader with live Wikipedia content.
 
 ## Algorithm

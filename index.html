@@ -4,40 +4,55 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>MzansiPedia</title>
-    <meta property="og:url" content="https://mzansipedia.app/">
+    <meta property="og:url" content="https://mzansipedia.vercel.app/">
     <meta property="og:title" content="MzansiPedia">
-    <meta name="description" content="South African stories, history & culture in your feed">
-    <meta property="og:description" content="South African stories, history & culture in your feed">
+    <meta name="description" content="A local-first feed of South African Wikipedia stories, places, people, culture, sport, wildlife, and history.">
+    <meta property="og:description" content="A local-first feed of South African Wikipedia stories, places, people, culture, sport, wildlife, and history.">
     <meta property="og:locale" content="en-za">
     <meta property="og:type" content="website">
-    <meta content="#000000" name="theme-color" />
+    <meta content="#050806" name="theme-color" />
     <link rel="manifest" href="app.webmanifest" />
     <style>
         :root {
             --red: #C8102E;
             --gold: #FFB81C;
             --green: #007749;
-            --blue: #1D9BF0;
-            --bg: #000000;
-            --bg-card: #16181C;
-            --bg-hover: #1D1F23;
-            --border: #2F3336;
-            --text-primary: #E7E9EA;
-            --text-secondary: #71767B;
-            --text-tertiary: #536471;
+            --blue: #78B7FF;
+            --bg: #050806;
+            --bg-card: #111713;
+            --bg-raised: #18211B;
+            --bg-hover: #1A241D;
+            --border: #29362D;
+            --text-primary: #F1F3EE;
+            --text-secondary: #A2ABA3;
+            --text-tertiary: #778279;
+            --danger: #F15D5D;
             --safe-bottom: 0px;
             --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html, body {
-            background: var(--bg);
+            background:
+                radial-gradient(circle at 12% 0%, rgba(0,119,73,0.16), transparent 28rem),
+                radial-gradient(circle at 90% 14%, rgba(255,184,28,0.08), transparent 24rem),
+                var(--bg);
             color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: "Aptos", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
             -webkit-font-smoothing: antialiased;
         }
-        body { display: flex; min-height: 100vh; }
+        body { display: flex; min-height: 100dvh; }
         a { color: var(--blue); text-decoration: none; }
         a:hover { text-decoration: underline; }
+        button, input, select { font: inherit; }
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        a:focus-visible,
+        [role="button"]:focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: 3px;
+        }
+        .hidden { display: none !important; }
 
         /* === LEFT SIDEBAR === */
         .sidebar {
@@ -95,7 +110,7 @@
             position: sticky;
             top: 0;
             z-index: 10;
-            background: rgba(0,0,0,0.65);
+            background: rgba(5,8,6,0.82);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
         }
@@ -154,7 +169,7 @@
             flex-shrink: 0;
             width: 40px;
             height: 40px;
-            border-radius: 50%;
+            border-radius: 12px;
             overflow: hidden;
             background: var(--border);
         }
@@ -287,7 +302,8 @@
             color: var(--text-secondary);
         }
         .trending-box {
-            background: var(--bg-card);
+            background: rgba(17,23,19,0.94);
+            border: 1px solid rgba(255,255,255,0.04);
             border-radius: 16px;
             overflow: hidden;
             margin-bottom: 16px;
@@ -338,6 +354,7 @@
             z-index: 100;
         }
         #loading::before {
+            content: '';
             display: block;
             width: 28px;
             height: 28px;
@@ -353,33 +370,37 @@
         #startScreen {
             display: flex;
             flex-direction: column;
-            background: var(--bg-card);
-            border: none;
+            background:
+                linear-gradient(160deg, rgba(255,184,28,0.07), transparent 34%),
+                var(--bg-card);
+            border: 1px solid var(--border);
             width: 90%;
             height: 90%;
             max-width: 480px;
             color: var(--text-primary);
-            border-radius: 16px;
+            border-radius: 18px;
             padding: 40px 32px;
             box-sizing: border-box;
             overflow-y: auto;
         }
         #startScreen h1 {
-            font-size: 2rem;
+            font-size: clamp(2rem, 8vw, 3.5rem);
             font-weight: 800;
-            background: linear-gradient(135deg, var(--green), var(--gold), var(--red));
+            background: linear-gradient(135deg, var(--green), var(--gold));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-align: center;
+            text-align: left;
             margin-bottom: 8px;
+            letter-spacing: -0.03em;
+            line-height: 0.95;
         }
         #startScreen h2 {
             font-size: 1rem;
             color: var(--text-secondary);
-            font-weight: 400;
+            font-weight: 600;
             font-style: italic;
-            text-align: center;
+            text-align: left;
             margin-bottom: 24px;
         }
         #startScreen p {
@@ -389,6 +410,17 @@
             margin-bottom: 16px;
         }
         #startScreen strong { color: var(--text-primary); }
+        .start-section-title {
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .source-note {
+            margin-top: auto;
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
         #categoryPickList {
             display: flex;
             flex-wrap: wrap;
@@ -441,7 +473,7 @@
         }
         #categorySearch select:not(:has(option)) { display: none; }
         #startBtn {
-            margin-top: 20px;
+            margin: 12px 0 16px;
             width: 100%;
             padding: 14px;
             border: none;
@@ -451,10 +483,16 @@
             font-size: 17px;
             font-weight: 700;
             cursor: pointer;
-            transition: background 0.15s;
+            transition: background 0.15s, transform 0.15s;
         }
         #startBtn:hover { background: #005D39; }
+        #startBtn:active { transform: translateY(1px) scale(0.99); }
         #startBtn[disabled] { background: var(--border); color: var(--text-secondary); cursor: not-allowed; }
+        .load-error {
+            color: var(--danger);
+            font-weight: 700;
+        }
+        .load-error a { color: var(--blue); }
 
         /* === DIALOGS === */
         ::backdrop { background: rgba(91,112,131,0.4); }
@@ -555,8 +593,8 @@
         .modal-btn-primary:hover { background: #005D39; }
         .modal-btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-primary); }
         .modal-btn-outline:hover { background: var(--bg-hover); }
-        .modal-btn-danger { background: transparent; border: 1px solid #F4212E; color: #F4212E; }
-        .modal-btn-danger:hover { background: rgba(244,33,46,0.1); }
+        .modal-btn-danger { background: transparent; border: 1px solid var(--danger); color: var(--danger); }
+        .modal-btn-danger:hover { background: rgba(241,93,93,0.1); }
         profile-entry {
             display: flex;
             justify-content: space-between;
@@ -573,14 +611,14 @@
         profile-entry button {
             background: none;
             border: none;
-            color: #F4212E;
+            color: var(--danger);
             font-size: 13px;
             font-weight: 700;
             cursor: pointer;
             padding: 4px 8px;
             border-radius: 4px;
         }
-        profile-entry button:hover { background: rgba(244,33,46,0.1); }
+        profile-entry button:hover { background: rgba(241,93,93,0.1); }
         #statsModal details {
             padding: 12px 0;
             border-bottom: 1px solid var(--border);
@@ -602,6 +640,17 @@
             border: 1px solid var(--border);
             overflow: hidden;
             margin-top: 8px;
+        }
+        .setting-group {
+            display: block;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .setting-group-title {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
         .radio-picker label {
             flex: 1;
@@ -857,26 +906,26 @@
             </div>
         </div>
         <div class="trending-box">
-            <div class="trending-box-title">Trending in Mzansi</div>
+            <div class="trending-box-title">Starting points</div>
             <div id="trendingList">
-                <div class="trending-item">
-                    <div class="trending-label">History · Trending</div>
+                <div class="trending-item" data-title="Apartheid">
+                    <div class="trending-label">History lens</div>
                     <div class="trending-topic">Apartheid</div>
                 </div>
-                <div class="trending-item">
-                    <div class="trending-label">Wildlife · Trending</div>
+                <div class="trending-item" data-title="Big Five game">
+                    <div class="trending-label">Wildlife lens</div>
                     <div class="trending-topic">Big Five</div>
                 </div>
-                <div class="trending-item">
-                    <div class="trending-label">Culture · Trending</div>
+                <div class="trending-item" data-title="Amapiano">
+                    <div class="trending-label">Culture lens</div>
                     <div class="trending-topic">Amapiano</div>
                 </div>
-                <div class="trending-item">
-                    <div class="trending-label">People · Trending</div>
+                <div class="trending-item" data-title="Nelson Mandela">
+                    <div class="trending-label">People lens</div>
                     <div class="trending-topic">Nelson Mandela</div>
                 </div>
-                <div class="trending-item">
-                    <div class="trending-label">Sport · Trending</div>
+                <div class="trending-item" data-title="South Africa national rugby union team">
+                    <div class="trending-label">Sport lens</div>
                     <div class="trending-topic">Springboks</div>
                 </div>
             </div>
@@ -919,19 +968,19 @@
     <!-- START SCREEN -->
     <div id="startScreen" popover=manual>
         <h1>MzansiPedia</h1>
-        <h2>Proudly South African</h2>
-        <p><strong>MzansiPedia</strong> is a pseudo social media feed that algorithmically shows you content from <a href="https://simple.wikipedia.org/">Simple Wikipedia</a> — filtered to only South African stories, history, culture, wildlife, and people.</p>
-        <p>Once loaded, it's available fully offline, and you can install it as an app.</p>
-        <p style="display:none" id="iosmessage">iOS users: Apple limits memory for PWAs. If it crashes, try desktop mode.</p>
-        <p style="font-weight:600;margin-bottom:4px">Pick some categories to get started</p>
+        <h2>South African knowledge, tuned locally</h2>
+        <p><strong>MzansiPedia</strong> turns South African Wikipedia topics into a reading feed. It starts with places, people, sport, wildlife, languages, food, culture, and history.</p>
+        <p>Your likes, profile, and scoring stay in this browser. Article text and images may be requested from Wikimedia while you browse.</p>
+        <p class="hidden" id="iosmessage">iOS may reload heavy offline apps. If this page closes, reopen it in Safari and continue from the same profile.</p>
+        <p class="start-section-title">Choose your first lens</p>
         <div id="categoryPickList"></div>
-        <p style="font-weight:600;margin-bottom:4px">Or search for a topic</p>
+        <button id="startBtn" disabled>Start reading</button>
+        <p class="start-section-title">Or search for a topic</p>
         <div id="categorySearch">
-            <input placeholder="Zulu heritage..." disabled />
+            <input placeholder="Biko, Soweto, fynbos..." disabled />
             <select size="5"></select>
         </div>
-        <p style="margin-top:auto;font-size:13px">Content is from Wikipedia. Some topics may be sensitive (e.g. apartheid history).</p>
-        <button id="startBtn" disabled>I'm ready, explore Mzansi</button>
+        <p class="source-note">Source material comes from Wikipedia and Wikimedia. Historical topics can include contested or sensitive material.</p>
     </div>
 
     <!-- DIALOGS -->
@@ -966,15 +1015,17 @@
         </div>
         <div class="modal-body">
             <label>Store data<input id="setting-storeData" type=checkbox></label>
-            <p>Store your algorithm data locally. No data leaves your device.</p>
+            <p>Keep profile, likes, and ranking scores in this browser.</p>
             <label>Open links in English Wikipedia<input id="setting-openMainWiki" type=checkbox></label>
             <p>Open articles on English Wikipedia instead of Simple English.</p>
-            <pseudo-label>Theme
+            <button id="install" class="modal-btn modal-btn-primary hidden">Install app</button>
+            <div class="setting-group">
+            <span class="setting-group-title">Theme</span>
             <div class="radio-picker" role="radiogroup" aria-label="Theme picker">
                 <label><input type="radio" name="theme" id="theme-auto" checked>Auto</label>
                 <label><input type="radio" name="theme" id="theme-dark">Dark</label>
             </div>
-            </pseudo-label>
+            </div>
             <div style="height:16px"></div>
             <button class="modal-btn modal-btn-outline" onclick="showAboutModal()">About MzansiPedia</button>
             <button class="modal-btn modal-btn-danger" onclick="resetAlgorithm()">Reset the algorithm</button>
@@ -988,9 +1039,9 @@
             <button class="closeBtn" aria-label="Close" onclick="aboutModal.close()">X</button>
         </div>
         <div class="modal-body">
-            <p><strong>MzansiPedia</strong> is a pseudo social media feed that algorithmically shows you South African content from <a href="https://simple.wikipedia.org/">Simple Wikipedia</a>. It learns what you engage with to suggest more. The algorithm runs locally — no data leaves your device.</p>
-            <p>Once loaded, it's available fully offline and installable as an app.</p>
-            <p>Built with love for Mzansi.</p>
+            <p><strong>MzansiPedia</strong> is a local-first reader for South African Wikipedia topics. It ranks the next card from the categories you choose, posts you open, and posts you like.</p>
+            <p>Engagement data stays in local storage. The bundled dataset works offline after it loads; live article summaries and images come from Wikimedia when a network is available.</p>
+            <p>This project adapts the Xikipedia concept for South African public knowledge.</p>
         </div>
     </dialog>
 
@@ -1001,7 +1052,9 @@
 
     if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !navigator.standalone) {
         if (installButton) installButton.classList.remove("hidden");
-        if (installButton) installButton.onclick = () => alert("To install, open in Safari, tap share, and choose 'Add to Home Screen'.");
+        if (installButton) installButton.onclick = () => {
+            installButton.textContent = "Use Safari Share > Add to Home Screen";
+        };
     }
 
     window.addEventListener("beforeinstallprompt", (event) => {
@@ -1015,7 +1068,7 @@
       }
       await (await fetch("index.html")).text();
       const result = await installPrompt.prompt();
-      console.log(`Install prompt was: ${result.outcome}`);
+      if (result.outcome !== "accepted") installButton.classList.add("hidden");
       disableInAppInstallPrompt();
     });
     
@@ -1028,7 +1081,6 @@
     if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("sw.js").then(reg => window.swReg = reg).catch(err => {
             window.swReg = "err";
-            console.error(`Registration failed with ${err}`);
         });
         navigator.serviceWorker.addEventListener('message', event => {
             if (event.data.event=="downloadProgress")
@@ -1058,12 +1110,26 @@
     const defaultCategories = ["history of south africa", "south african culture", "geography of south africa", "south african wildlife", "south african sport", "south african cuisine", "south african music", "south african people", "apartheid in south africa", "south african languages", "south african fashion", "south african art"];
     let postsWithoutLike = 0;
 
-    const HTML_VERSION = "2.1.1";
+    const HTML_VERSION = "2.2.0";
+
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            "\"": "&quot;",
+            "'": "&#39;",
+        }[char]));
+    }
+
+    function escapeAttr(value) {
+        return escapeHTML(value).replace(/`/g, "&#96;");
+    }
 
     function loadSettings() {
         const baseSettings = {
             storeData: true,
-            openMainWiki: true,
+            openMainWiki: false,
             dataSize: 532833,
             profile: "default",
             profiles: ["default"],
@@ -1355,25 +1421,57 @@
             const resp = await fetch(`https://${wiki}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`);
             if (!resp.ok) throw new Error('Not found');
             const data = await resp.json();
-            const thumbHtml = data.thumbnail ? `<img class="article-thumb" src="${data.thumbnail.source}" alt="${title}" loading="lazy" />` : '';
+            const safeTitle = escapeHTML(data.title || title);
+            const extract = data.extract_html || escapeHTML(data.extract || "");
+            const thumbHtml = data.thumbnail ? `<img class="article-thumb" src="${escapeAttr(data.thumbnail.source)}" alt="${escapeAttr(data.title || title)}" loading="lazy" />` : '';
+            const articleUrl = getArticleLink(title);
             articleContent.innerHTML = `
-                <h1>${data.title}</h1>
-                <div class="article-extract">${data.extract_html || data.extract}</div>
+                <h1>${safeTitle}</h1>
+                <div class="article-extract">${extract}</div>
                 ${thumbHtml}
             `;
             articleFooter.innerHTML = `
-                <a class="read-more" href="${getArticleLink(title)}" target="_blank" rel="noopener">Read on Wikipedia →</a>
-                <button class="share-article" onclick="navigator.share?navigator.share({title:'${title.replace(/'/g,"\\'")}',url:'${getArticleLink(title)}'}):navigator.clipboard.writeText('${getArticleLink(title)}')">Share</button>
+                <a class="read-more" href="${escapeAttr(articleUrl)}" target="_blank" rel="noopener">Read on Wikipedia</a>
+                <button class="share-article" type="button">Share link</button>
             `;
+            articleFooter.querySelector(".share-article").onclick = () => shareLink(data.title || title, articleUrl, articleFooter.querySelector(".share-article"));
         } catch (e) {
-            articleContent.innerHTML = `<div class="article-loading" style="color:var(--red)">Could not load article. <a href="${getArticleLink(title)}" target="_blank" rel="noopener" style="color:var(--blue)">Open on Wikipedia →</a></div>`;
+            articleContent.innerHTML = `<div class="article-loading load-error">Could not load article. <a href="${escapeAttr(getArticleLink(title))}" target="_blank" rel="noopener">Open on Wikipedia</a></div>`;
         }
+    }
+
+    function shareLink(title, url, button) {
+        if (navigator.share) {
+            navigator.share({ title, url }).catch(() => {});
+            return;
+        }
+        navigator.clipboard.writeText(url).then(() => {
+            if (!button) return;
+            const previousText = button.textContent;
+            button.textContent = "Link copied";
+            setTimeout(() => button.textContent = previousText, 1500);
+        });
     }
 
     function showRandomArticle() {
         if (!pagesArr.length) return;
         const post = pagesArr[Math.floor(Math.random() * pagesArr.length)];
         showArticle(null, post.title);
+    }
+
+    function initStartingPointLinks() {
+        document.querySelectorAll(".trending-item[data-title]").forEach(item => {
+            item.setAttribute("role", "button");
+            item.setAttribute("tabindex", "0");
+            const openTopic = () => showArticle(null, item.dataset.title);
+            item.onclick = openTopic;
+            item.onkeydown = e => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    openTopic();
+                }
+            };
+        });
     }
 
     function searchArticles(query) {
@@ -1384,7 +1482,7 @@
         if (!results.length) { el.classList.remove("show"); return; }
         el.innerHTML = results.map(p => {
             const cat = getCategoryLabel(p);
-            return `<div class="search-result-item" data-title="${p.title.replace(/"/g,'&quot;')}">${p.title} <span class="sr-cat">· ${cat}</span></div>`;
+            return `<div class="search-result-item" data-title="${escapeAttr(p.title)}">${escapeHTML(p.title)} <span class="sr-cat">· ${escapeHTML(cat)}</span></div>`;
         }).join('');
         el.classList.add("show");
         el.querySelectorAll(".search-result-item").forEach(item => {
@@ -1438,9 +1536,9 @@
         return amount;
     }
 
-    function showPic(imgName) {
+    function showPicUrl(imageUrl) {
         const fullImg = document.createElement("img");
-        fullImg.src = `https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/${imgName.replace(/ /g, '_')}`;
+        fullImg.src = imageUrl;
         fullImg.popover = "auto";
         fullImg.classList.add("fullImg");
         document.body.appendChild(fullImg);
@@ -1478,29 +1576,27 @@
 
         const cat = getCategoryLabel(nextPost);
         const firstLetter = nextPost.title.charAt(0).toUpperCase();
-
-        let mediaHTML = "";
-        if (nextPost.thumb) {
-            mediaHTML = `<div class="post-media"><img src="https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/${nextPost.thumb.replace(/ /g, '_')}&width=512" loading="eager" onerror="this.parentElement.remove()" /></div>`;
-        }
+        const safeTitle = escapeHTML(nextPost.title);
+        const safeText = escapeHTML(nextPost.text);
+        const safeCat = escapeHTML(cat);
+        const dataTitle = escapeAttr(nextPost.title);
 
         post.innerHTML = `
-            <div class="post-avatar"><div class="avatar-placeholder">${firstLetter}</div></div>
+            <div class="post-avatar"><div class="avatar-placeholder">${escapeHTML(firstLetter)}</div></div>
             <div class="post-body">
                 <div class="post-header">
-                    <span class="post-title">${nextPost.title}</span>
-                    <span class="post-category">· ${cat}</span>
+                    <span class="post-title">${safeTitle}</span>
+                    <span class="post-category">· ${safeCat}</span>
                 </div>
-                <div class="post-text">${nextPost.text}</div>
-                ${mediaHTML}
+                <div class="post-text">${safeText}</div>
                 <div class="post-actions">
-                    <button class="post-action comment-btn" title="Open article" data-title="${nextPost.title.replace(/"/g, '&quot;')}">
+                    <button class="post-action comment-btn" title="Open article" aria-label="Open article" data-title="${dataTitle}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     </button>
-                    <button class="post-action like-btn" title="Like">
+                    <button class="post-action like-btn" title="Like" aria-label="Like article">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.06,21.01c3.94,0,13.77-11.36,8.56-16.37-4.59-4.41-8.61,1.58-8.61,1.58,0,0-4.02-5.99-8.61-1.58-5.22,5.01,4.61,16.37,8.56,16.37h.11Z"/></svg>
                     </button>
-                    <button class="post-action share-btn" title="Share">
+                    <button class="post-action share-btn" title="Share" aria-label="Share article">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                     </button>
                 </div>
@@ -1537,44 +1633,40 @@
         shareBtn.onclick = (e) => {
             e.stopPropagation();
             const url = getArticleLink(nextPost.title);
-            const text = `${nextPost.title} — MzansiPedia`;
-            if (navigator.share) {
-                navigator.share({ title: nextPost.title, text, url }).catch(() => {});
-            } else {
-                navigator.clipboard.writeText(url).then(() => {
-                    shareBtn.title = "Copied!";
-                    setTimeout(() => shareBtn.title = "Share", 1500);
-                });
-            }
+            shareLink(nextPost.title, url, shareBtn);
         };
-
-        if (nextPost.thumb) {
-            const img = post.querySelector(".post-media img");
-            if (img) {
-                img.onclick = (e) => {
-                    showPic(nextPost.thumb);
-                    if (!img.dataset.engaged)
-                        img.dataset.engaged = engagePost(nextPost, 100);
-                    e.stopPropagation();
-                };
-            }
-        }
 
         engagePost(nextPost, -5);
         postsWithoutLike++;
         document.querySelector(".posts").appendChild(post);
 
-        fetchLiveText(post, nextPost.title);
+        fetchLiveText(post, nextPost);
     }
 
-    function fetchLiveText(post, title) {
-        const wiki = settings.openMainWiki ? 'en' : 'simple';
-        fetch(`https://${wiki}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`)
+    function fetchLiveText(post, sourcePost) {
+        fetch(`https://simple.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(sourcePost.title)}`)
             .then(r => r.ok ? r.json() : null)
             .then(data => {
                 if (!data || !data.extract) return;
                 const textEl = post.querySelector(".post-text");
                 if (textEl) textEl.textContent = data.extract;
+                const imageUrl = data.thumbnail?.source;
+                if (!imageUrl || post.querySelector(".post-media")) return;
+                const media = document.createElement("div");
+                media.className = "post-media";
+                const img = document.createElement("img");
+                img.src = imageUrl;
+                img.alt = data.title || sourcePost.title;
+                img.loading = "lazy";
+                img.onerror = () => media.remove();
+                img.onclick = (e) => {
+                    showPicUrl(data.originalimage?.source || imageUrl);
+                    if (!img.dataset.engaged)
+                        img.dataset.engaged = engagePost(sourcePost, 100);
+                    e.stopPropagation();
+                };
+                media.appendChild(img);
+                post.querySelector(".post-body").insertBefore(media, post.querySelector(".post-actions"));
             })
             .catch(() => {});
     }
@@ -1673,12 +1765,11 @@ async function* streamToAsyncIterable(stream) {
             const versionInfo = await (await fetch("version.json", {cache: "no-store"})).json();
             if (versionInfo.html != HTML_VERSION) {
                 if (window.swReg) {
-                    const res = await (await fetch("clearHtml")).text();
-                    console.log(res);
+                    await (await fetch("clearHtml")).text();
                 }
                 document.location.reload();
             }
-            if (window.swReg) {
+            if (window.swReg && navigator.serviceWorker.controller) {
                 const swVer = await (await fetch("swVer")).text();
                 if (versionInfo.sw != swVer) {
                     await window.swReg.update();
@@ -1686,20 +1777,7 @@ async function* streamToAsyncIterable(stream) {
                 }
             }
         } catch (e) {
-            console.error("Couldn't check versions", e);
-        }
-    }
-                document.location.reload();
-            }
-            if (window.swReg) {
-                const swVer = await (await fetch("swVer")).text();
-                if (versionInfo.sw != swVer) {
-                    await window.swReg.update();
-                    document.location.reload();
-                }
-            }
-        } catch (e) {
-            console.error("Couldn't check versions", e);
+            return;
         }
     }
 
@@ -1713,7 +1791,7 @@ async function* streamToAsyncIterable(stream) {
     let downloadFinished = false;
     async function main() {
         if (/iPad|iPhone|iPod/.test(navigator.userAgent))
-            document.getElementById("iosmessage").style.display = "block";
+            document.getElementById("iosmessage").classList.remove("hidden");
         loadStatus("loading profile");
         const hasProfile = initProfile();
         if (hasProfile)
@@ -1728,7 +1806,21 @@ async function* streamToAsyncIterable(stream) {
         }
         checkVersionAsync();
         loadStatus("loading data");
-        const smoldata = await getFileWithProgress(DATA_URL);
+        let smoldata;
+        try {
+            smoldata = await getFileWithProgress(DATA_URL);
+        } catch (error) {
+            loadStatus("data could not load");
+            startBtn.innerText = "Retry loading data";
+            startBtn.removeAttribute("disabled");
+            startBtn.onclick = () => document.location.reload();
+            const loading = document.querySelector("#loading");
+            if (loading) {
+                loading.classList.add("load-error");
+                loading.innerText = "Data could not load. Check the connection and try again.";
+            }
+            return;
+        }
         downloadFinished = true;
 
         const subCategories = smoldata.subCategories;
@@ -1738,7 +1830,6 @@ async function* streamToAsyncIterable(stream) {
 
         let i = 0;
         const wikiLen = smoldata.pages.length;
-        console.log(wikiLen);
         const loading = document.querySelector("#loading");
         let lastFrame = Date.now();
         while (smoldata.pages.length) {
@@ -1758,7 +1849,8 @@ async function* streamToAsyncIterable(stream) {
         if (loading) loading.remove();
         startBtn.removeAttribute("disabled");
         categorySearchInput.removeAttribute("disabled");
-        startBtn.innerText = "I'm ready, explore Mzansi";
+        startBtn.innerText = "Start reading";
+        initStartingPointLinks();
         startBtn.onclick = () => {
             document.querySelectorAll(".categoryPicker>input:checked").forEach(e => categoryScores[e.dataset.category] = defaultCategories.includes(e.dataset.category) ? 1000 : 5000);
             document.querySelectorAll(".categoryPicker>input:checked").forEach(e => {
@@ -1770,14 +1862,14 @@ async function* streamToAsyncIterable(stream) {
             startScreen.hidePopover();
             startScreen.remove();
             setTimeout(saveProfile,100);
-            document.querySelector('meta[name="theme-color"]').setAttribute("content", "#000000");
+            document.querySelector('meta[name="theme-color"]').setAttribute("content", "#050806");
             requestAnimationFrame(render);
         }
         initProfile();
         if (hasProfile) {
             startScreen.remove();
             setTimeout(saveProfile,100);
-            document.querySelector('meta[name="theme-color"]').setAttribute("content", "#000000");
+            document.querySelector('meta[name="theme-color"]').setAttribute("content", "#050806");
             requestAnimationFrame(render);
         }
     }

@@ -3,5 +3,9 @@ simplewiki-*.xml
 simplewiki-*.xml.bz2
 simplewiki-*.sql
 simplewiki-*.sql.gz
+*.bz2
+*.gz
 
+# Build artifacts
 .vercel
+node_modules
