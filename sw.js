@@ -1,4 +1,4 @@
-const SW_VERSION = '2.1.1';
+const SW_VERSION = '2.2.0';
 
 self.addEventListener('install', () => {
   self.skipWaiting();
@@ -27,7 +27,6 @@ self.addEventListener("fetch", (event) => {
     if (cachedResponse)
       return cachedResponse;
     const isSmolData = filename == "smoldata.json";
-    // todo: delete after verifying the new one downloaded
     if (isSmolData)
       await caches.delete("smoldata");
     const cache = await caches.open(isSmolData ? "smoldata" : "html");
@@ -35,7 +34,7 @@ self.addEventListener("fetch", (event) => {
       const networkResponse = await fetch(request);
       if (isSmolData)
         progressMonitor(event.clientId, networkResponse.clone());
-      await cache.put(request, networkResponse.clone());
+      event.waitUntil(cache.put(request, networkResponse.clone()).catch(() => {}));
       return networkResponse;
     } catch (error) {
       return new Response("Network error happened", {
@@ -50,7 +49,6 @@ self.addEventListener("fetch", (event) => {
 // based on https://github.com/anthumchris/fetch-progress-indicators/blob/master/sw-basic/sw-simple.js
 function progressMonitor(clientId, response) {
   if (!response.body) {
-    console.warn("ReadableStream is not yet supported in this browser.  See https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream")
     return response;
   }
   if (!response.ok) {
@@ -81,21 +79,17 @@ function progressMonitor(clientId, response) {
 
             controller.enqueue(value);
             loaded += value.byteLength;
-            client.postMessage({event:"downloadProgress",data:loaded})
+            if (client)
+              client.postMessage({event:"downloadProgress",data:loaded})
             read();
           })
           .catch(error => {
-            // error only typically occurs if network fails mid-download
-            console.error('error in read()', error);
             controller.error(error);
           });
         }
       },
 
-      // Firefox excutes this on page stop, Chrome does not
-      cancel(reason) {
-        console.log('cancel()', reason);
-      }
+      cancel() {}
     })
   )
 }

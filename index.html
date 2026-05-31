@@ -1799,11 +1799,7 @@ async function* streamToAsyncIterable(stream) {
         else
             startScreen.showPopover();
         defaultCategories.forEach(e=>addPickableCategory(e));
-        loadStatus("waiting for service worker");
-        for (let i = 0; i<500; i++) {
-            if (window.swReg && (swReg == "err" || window.swReg?.active)) break;
-            await new Promise(r => setTimeout(r, 10));
-        }
+        loadStatus("checking version");
         checkVersionAsync();
         loadStatus("loading data");
         let smoldata;
