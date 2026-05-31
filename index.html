@@ -1199,7 +1199,7 @@
     const defaultCategories = ["history of south africa", "south african culture", "geography of south africa", "south african wildlife", "south african sport", "south african cuisine", "south african music", "south african people", "apartheid in south africa", "south african languages", "south african fashion", "south african art"];
     let postsWithoutLike = 0;
 
-    const HTML_VERSION = "2.3.0";
+    const HTML_VERSION = "2.3.1";
 
     const feedFilters = {
         "for-you": [],
@@ -1779,12 +1779,7 @@
         ctx.fillText("South African Wikipedia stories", 92, 1242);
         canvas.toBlob(blob => {
             if (!blob) return;
-            const file = new File([blob], "mzansipedia-card.png", { type: "image/png" });
-            if (navigator.canShare?.({ files: [file] }) && navigator.share) {
-                navigator.share({ files: [file], title }).catch(() => downloadShareCard(blob));
-            } else {
-                downloadShareCard(blob);
-            }
+            downloadShareCard(blob);
         }, "image/png");
     }
 
@@ -1793,8 +1788,13 @@
         const link = document.createElement("a");
         link.href = url;
         link.download = "mzansipedia-card.png";
+        link.rel = "noopener";
+        document.body.appendChild(link);
         link.click();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        setTimeout(() => {
+            URL.revokeObjectURL(url);
+            link.remove();
+        }, 1000);
     }
 
     function showRandomArticle() {
