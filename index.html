@@ -2,7 +2,7 @@
 <html lang="en-za">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>MzansiPedia</title>
     <meta property="og:url" content="https://mzansipedia.vercel.app/">
     <meta property="og:title" content="MzansiPedia">
@@ -32,6 +32,10 @@
         }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html, body {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            overflow-x: hidden;
             background:
                 radial-gradient(circle at 12% 0%, rgba(0,119,73,0.16), transparent 28rem),
                 radial-gradient(circle at 90% 14%, rgba(255,184,28,0.08), transparent 24rem),
@@ -44,6 +48,7 @@
         a { color: var(--blue); text-decoration: none; }
         a:hover { text-decoration: underline; }
         button, input, select { font: inherit; }
+        input, select, textarea { font-size: 16px; }
         button:focus-visible,
         input:focus-visible,
         select:focus-visible,
@@ -99,8 +104,9 @@
 
         /* === MAIN FEED === */
         .main {
-            flex: 1;
+            flex: 1 1 600px;
             max-width: 600px;
+            min-width: 0;
             margin-left: 275px;
             margin-right: 350px;
             border-right: 1px solid var(--border);
@@ -122,12 +128,14 @@
         .feed-tabs {
             display: flex;
             overflow-x: auto;
+            min-width: 0;
             scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
         }
         .feed-tabs::-webkit-scrollbar { display: none; }
         .feed-tab {
-            flex: 1;
-            min-width: fit-content;
+            flex: 0 0 auto;
+            min-width: max-content;
             padding: 16px;
             text-align: center;
             font-size: 15px;
@@ -288,7 +296,7 @@
             border: 1px solid var(--border);
             background: var(--bg-card);
             color: var(--text-primary);
-            font-size: 15px;
+            font-size: 16px;
             outline: none;
             transition: border-color 0.2s, background 0.2s;
         }
@@ -375,12 +383,15 @@
         #startScreen {
             display: flex;
             flex-direction: column;
+            inset: 0;
+            margin: auto;
             background:
                 linear-gradient(160deg, rgba(255,184,28,0.07), transparent 34%),
                 var(--bg-card);
             border: 1px solid var(--border);
-            width: 90%;
-            height: 90%;
+            width: min(92dvw, 480px);
+            height: auto;
+            max-height: min(86dvh, 760px);
             max-width: 480px;
             color: var(--text-primary);
             border-radius: 18px;
@@ -461,7 +472,7 @@
             border: 1px solid var(--border);
             background: var(--bg);
             color: var(--text-primary);
-            font-size: 15px;
+            font-size: 16px;
             outline: none;
         }
         #categorySearch input:focus { border-color: var(--green); }
@@ -474,7 +485,7 @@
             border: 1px solid var(--border);
             background: var(--bg);
             color: var(--text-primary);
-            font-size: 14px;
+            font-size: 16px;
         }
         #categorySearch select:not(:has(option)) { display: none; }
         #startBtn {
@@ -907,8 +918,15 @@
             .main { margin-right: 0; }
         }
         @media (max-width: 1024px) {
+            body { display: block; }
             .sidebar { display: none; }
-            .main { margin-left: 0; }
+            .main {
+                width: 100%;
+                max-width: none;
+                margin-left: 0;
+                margin-right: 0;
+                border-right: none;
+            }
             .bottom-nav { display: block; }
             .main { padding-bottom: 64px; }
         }
@@ -1199,7 +1217,7 @@
     const defaultCategories = ["history of south africa", "south african culture", "geography of south africa", "south african wildlife", "south african sport", "south african cuisine", "south african music", "south african people", "apartheid in south africa", "south african languages", "south african fashion", "south african art"];
     let postsWithoutLike = 0;
 
-    const HTML_VERSION = "2.3.1";
+    const HTML_VERSION = "2.3.2";
 
     const feedFilters = {
         "for-you": [],
