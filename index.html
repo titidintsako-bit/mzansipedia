@@ -1292,11 +1292,11 @@
     const defaultCategories = ["history of south africa", "south african culture", "geography of south africa", "south african wildlife", "south african sport", "south african cuisine", "south african music", "south african people", "apartheid in south africa", "south african languages", "south african fashion", "south african art"];
     let postsWithoutLike = 0;
 
-    const HTML_VERSION = "2.4.0";
+    const HTML_VERSION = "2.4.1";
 
     const wikidataEntityCache = new Map();
     const wikidataLabelCache = new Map();
-    const wikidataLinkedProperties = ["P31", "P17", "P27", "P106", "P131"];
+    const wikidataLinkedProperties = ["P31", "P17", "P27", "P106", "P131", "P19", "P20"];
     // Keyword-only matches that are clearly outside the South Africa scope.
     const publicLaunchBlockedTitles = new Set([
         "aphaenogaster kimberleyensis",
@@ -1486,11 +1486,13 @@
             addLinkedRow("P106", "Occupation", 4);
             addLinkedRow("P131", "Located in", 3);
             addDateRow("P569", "Born");
+            addLinkedRow("P19", "Born in", 2);
             addDateRow("P570", "Died");
+            addLinkedRow("P20", "Died in", 2);
             addCoordinateRow();
             addUrlRow();
 
-            factsEl.innerHTML = `<dl class="fact-grid">${rows.slice(0, 9).map(([label, value]) => `<div class="fact-row"><dt>${escapeHTML(label)}</dt><dd>${value}</dd></div>`).join("")}</dl>`;
+            factsEl.innerHTML = `<dl class="fact-grid">${rows.slice(0, 11).map(([label, value]) => `<div class="fact-row"><dt>${escapeHTML(label)}</dt><dd>${value}</dd></div>`).join("")}</dl>`;
         } catch (error) {
             factsEl.innerHTML = '<p class="wikidata-status">Wikidata facts could not load right now.</p>';
         }
