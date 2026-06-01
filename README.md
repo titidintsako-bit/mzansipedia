@@ -13,6 +13,14 @@ Your likes, profile, and ranking scores stay in browser storage. The bundled dat
 - [Vercel](https://mzansipedia.vercel.app/)
 - [GitHub Pages mirror](https://titidintsako-bit.github.io/mzansipedia/)
 
+## Open source and privacy
+
+The repository is public on GitHub under AGPLv3. The app does not require accounts, API keys, server-side databases, or analytics.
+
+Profile choices, likes, ranking scores, and collections stay in local browser storage. Network requests go to the hosted static files and to Wikipedia/Wikimedia article summary and image endpoints while browsing.
+
+Do not commit local `.env*`, `.vercel/`, dependency folders, or generated test output; those paths are ignored.
+
 ## How it works
 
 - A dataset of ~764 South African-themed Wikipedia articles is loaded once.
@@ -29,7 +37,7 @@ Your likes, profile, and ranking scores stay in browser storage. The bundled dat
 Each post has a set of categories (Wikipedia category tree + pagelinks). Categories earn point scores based on your engagement:
 
 - Scrolling past: -5
-- Liking: 50 + 4 × posts since last like
+- Liking: 50 + 4 x posts since last like
 - Clicking to read: 75
 - Clicking an image: 100
 
@@ -44,7 +52,7 @@ The dataset is generated from [Simple Wikipedia dumps](https://dumps.wikimedia.o
 
 ## Fork
 
-This project is a fork of [Xikipedia](https://github.com/rebane2001/xikipedia) by rebane2001. The original concept — Wikipedia as a social media feed — was adapted for South African content and redesigned with a dark theme and expanded features.
+This project is a fork of [Xikipedia](https://github.com/rebane2001/xikipedia) by rebane2001. The original concept - Wikipedia as a social media feed - was adapted for South African content and redesigned with a dark theme and expanded features.
 
 ## License
 

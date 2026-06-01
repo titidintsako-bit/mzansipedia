@@ -4,4 +4,18 @@ simplewiki-*.xml.bz2
 simplewiki-*.sql
 simplewiki-*.sql.gz
 
+# Local config and secrets
+.env
+.env.*
+!.env.example
 .vercel
+
+# Dependencies and generated output
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+playwright-report/
+test-results/
+downloads/
