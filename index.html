@@ -808,6 +808,76 @@
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
+        .source-panel {
+            margin-top: 18px;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(5,8,6,0.46);
+        }
+        .source-panel h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .source-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .source-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 10px;
+            border: 1px solid var(--border);
+            border-radius: 9999px;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            background: var(--bg-card);
+        }
+        .source-chip:hover {
+            background: var(--bg-hover);
+            text-decoration: none;
+        }
+        .wikidata-facts {
+            margin-top: 12px;
+        }
+        .wikidata-status {
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .fact-grid {
+            display: grid;
+            gap: 8px;
+        }
+        .fact-row {
+            display: grid;
+            grid-template-columns: minmax(96px, 132px) minmax(0, 1fr);
+            gap: 10px;
+            padding: 8px 0;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .fact-row:first-child { border-top: 0; padding-top: 0; }
+        .fact-row dt {
+            color: var(--text-tertiary);
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .fact-row dd {
+            min-width: 0;
+            color: var(--text-primary);
+            font-size: 13px;
+            word-break: break-word;
+        }
+        .source-note-inline {
+            margin-top: 10px;
+            color: var(--text-tertiary);
+            font-size: 12px;
+            line-height: 1.5;
+        }
         .article-footer {
             display: flex;
             flex-wrap: wrap;
@@ -929,6 +999,10 @@
             }
             .bottom-nav { display: block; }
             .main { padding-bottom: 64px; }
+            .fact-row {
+                grid-template-columns: 1fr;
+                gap: 3px;
+            }
         }
     </style>
 </head>
@@ -1063,7 +1137,7 @@
         <h1>MzansiPedia</h1>
         <h2>South African knowledge, tuned locally</h2>
         <p><strong>MzansiPedia</strong> turns South African Wikipedia topics into a reading feed. It starts with places, people, sport, wildlife, languages, food, culture, and history.</p>
-        <p>Your likes, profile, and scoring stay in this browser. Article text and images may be requested from Wikimedia while you browse.</p>
+        <p>Your likes, profile, and scoring stay in this browser. Article text, images, and structured facts may be requested from Wikimedia and Wikidata while you browse.</p>
         <p class="hidden" id="iosmessage">iOS may reload heavy offline apps. If this page closes, reopen it in Safari and continue from the same profile.</p>
         <p class="start-section-title">Choose your first lens</p>
         <div id="categoryPickList"></div>
@@ -1073,7 +1147,7 @@
             <input placeholder="Biko, Soweto, fynbos..." disabled />
             <select size="5"></select>
         </div>
-        <p class="source-note">Source material comes from Wikipedia and Wikimedia. Historical topics can include contested or sensitive material.</p>
+        <p class="source-note">Source material comes from Wikipedia, Wikimedia, and Wikidata. Historical topics can include contested or sensitive material.</p>
     </div>
 
     <!-- DIALOGS -->
@@ -1146,6 +1220,7 @@
         <div class="modal-body">
             <p><strong>MzansiPedia</strong> is a local-first reader for South African Wikipedia topics. It ranks the next card from the categories you choose, posts you open, and posts you like.</p>
             <p>Engagement data stays in local storage. The bundled dataset works offline after it loads; live article summaries and images come from Wikimedia when a network is available.</p>
+            <p>Reader pages add Wikidata facts when Wikipedia returns a matching Wikidata item. Wikipedia text is CC BY-SA; Wikidata facts are CC0.</p>
             <p>This project adapts the Xikipedia concept for South African public knowledge.</p>
         </div>
     </dialog>
@@ -1217,7 +1292,39 @@
     const defaultCategories = ["history of south africa", "south african culture", "geography of south africa", "south african wildlife", "south african sport", "south african cuisine", "south african music", "south african people", "apartheid in south africa", "south african languages", "south african fashion", "south african art"];
     let postsWithoutLike = 0;
 
-    const HTML_VERSION = "2.3.2";
+    const HTML_VERSION = "2.4.0";
+
+    const wikidataEntityCache = new Map();
+    const wikidataLabelCache = new Map();
+    const wikidataLinkedProperties = ["P31", "P17", "P27", "P106", "P131"];
+    // Keyword-only matches that are clearly outside the South Africa scope.
+    const publicLaunchBlockedTitles = new Set([
+        "aphaenogaster kimberleyensis",
+        "big five",
+        "electoral district of kimberley",
+        "fariduddin ganjshakar",
+        "kid krrish: shakalaka africa",
+        "kimberley (western australia)",
+        "kimberley kitching",
+        "kimberley locke",
+        "kimberley rocket frog",
+        "kimberley rockhole frog",
+        "kimberley walsh",
+        "london and north western railway",
+        "north western province, sri lanka",
+        "oshakati",
+        "oshakati east",
+        "oshakati west",
+        "shaka era",
+        "shaka hislop",
+        "shaka sankofa",
+        "shakambari",
+        "shakargarh",
+        "shakargarh tehsil",
+        "stepan shakaryan",
+        "the adventures of buckaroo banzai across the 8th dimension",
+        "western capercaillie",
+    ]);
 
     const feedFilters = {
         "for-you": [],
@@ -1241,6 +1348,152 @@
 
     function escapeAttr(value) {
         return escapeHTML(value).replace(/`/g, "&#96;");
+    }
+
+    function isWikidataQid(value) {
+        return /^Q\d+$/.test(String(value || ""));
+    }
+
+    function getWikidataApiUrl(ids, props = "labels|descriptions|claims") {
+        const encodedIds = [...new Set(ids)].filter(isWikidataQid).join("|");
+        return `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${encodeURIComponent(encodedIds)}&props=${encodeURIComponent(props)}&languages=en&format=json&origin=*`;
+    }
+
+    function getWikidataLabel(entity, fallbackId) {
+        return entity?.labels?.en?.value || fallbackId;
+    }
+
+    function getWikidataDescription(entity) {
+        return entity?.descriptions?.en?.value || "";
+    }
+
+    async function fetchWikidataEntity(qid) {
+        if (!isWikidataQid(qid)) return null;
+        if (wikidataEntityCache.has(qid)) return wikidataEntityCache.get(qid);
+        const response = await fetch(getWikidataApiUrl([qid]));
+        if (!response.ok) throw new Error("Wikidata request failed");
+        const data = await response.json();
+        const entity = data?.entities?.[qid] || null;
+        wikidataEntityCache.set(qid, entity);
+        if (entity) wikidataLabelCache.set(qid, getWikidataLabel(entity, qid));
+        return entity;
+    }
+
+    async function fetchWikidataLabels(ids) {
+        const cleanIds = [...new Set(ids)].filter(isWikidataQid);
+        const missingIds = cleanIds.filter(id => !wikidataLabelCache.has(id));
+        if (missingIds.length) {
+            const response = await fetch(getWikidataApiUrl(missingIds.slice(0, 50), "labels"));
+            if (response.ok) {
+                const data = await response.json();
+                Object.entries(data?.entities || {}).forEach(([id, entity]) => {
+                    wikidataLabelCache.set(id, getWikidataLabel(entity, id));
+                });
+            }
+        }
+        return cleanIds.map(id => [id, wikidataLabelCache.get(id) || id]);
+    }
+
+    function getClaimValues(entity, propertyId) {
+        return (entity?.claims?.[propertyId] || [])
+            .map(claim => claim?.mainsnak?.datavalue?.value)
+            .filter(Boolean);
+    }
+
+    function getLinkedClaimIds(entity, propertyId, limit = 3) {
+        return getClaimValues(entity, propertyId)
+            .map(value => value?.id)
+            .filter(isWikidataQid)
+            .slice(0, limit);
+    }
+
+    function formatWikidataDate(value) {
+        const clean = String(value?.time || "").replace(/^\+/, "").replace(/T.*$/, "");
+        if (!clean) return "";
+        if (value.precision >= 11) return clean;
+        if (value.precision === 10) return clean.slice(0, 7);
+        return clean.slice(0, 4);
+    }
+
+    function formatCoordinates(value) {
+        if (typeof value?.latitude !== "number" || typeof value?.longitude !== "number") return "";
+        return `${value.latitude.toFixed(4)}, ${value.longitude.toFixed(4)}`;
+    }
+
+    function safeHttpUrl(value) {
+        try {
+            const url = new URL(String(value || ""));
+            if (url.protocol === "https:" || url.protocol === "http:")
+                return url.href;
+        } catch {}
+        return "";
+    }
+
+    function renderSourcePanel({ articleUrl, wikidataId }) {
+        const wikidataUrl = isWikidataQid(wikidataId) ? `https://www.wikidata.org/wiki/${wikidataId}` : "";
+        return `
+            <section class="source-panel" aria-label="Article sources">
+                <h3>Sources</h3>
+                <div class="source-chips">
+                    <a class="source-chip" href="${escapeAttr(articleUrl)}" target="_blank" rel="noopener">Wikipedia article</a>
+                    ${wikidataUrl ? `<a class="source-chip" href="${escapeAttr(wikidataUrl)}" target="_blank" rel="noopener">Wikidata facts</a>` : ""}
+                </div>
+                <div class="wikidata-facts" id="wikidataFacts" data-wikidata-id="${escapeAttr(wikidataId || "")}">
+                    <p class="wikidata-status">${wikidataUrl ? "Loading Wikidata facts..." : "No Wikidata item was returned for this article."}</p>
+                </div>
+                <p class="source-note-inline">Article summaries come from Wikipedia. Structured facts come from Wikidata. Verify sensitive details from the source links.</p>
+            </section>
+        `;
+    }
+
+    async function loadWikidataFacts(qid) {
+        const factsEl = document.getElementById("wikidataFacts");
+        if (!factsEl || !isWikidataQid(qid)) return;
+        try {
+            const entity = await fetchWikidataEntity(qid);
+            if (factsEl.dataset.wikidataId !== qid) return;
+            if (!entity) throw new Error("Wikidata item missing");
+            const linkedIds = wikidataLinkedProperties.flatMap(propertyId => getLinkedClaimIds(entity, propertyId, propertyId === "P106" ? 4 : 3));
+            await fetchWikidataLabels(linkedIds);
+            if (factsEl.dataset.wikidataId !== qid) return;
+
+            const rows = [["Wikidata ID", `<a href="https://www.wikidata.org/wiki/${escapeAttr(qid)}" target="_blank" rel="noopener">${escapeHTML(qid)}</a>`]];
+            const description = getWikidataDescription(entity);
+            if (description) rows.push(["Summary", escapeHTML(description)]);
+
+            const addLinkedRow = (propertyId, label, limit = 3) => {
+                const values = getLinkedClaimIds(entity, propertyId, limit)
+                    .map(id => escapeHTML(wikidataLabelCache.get(id) || id))
+                    .filter(Boolean);
+                if (values.length) rows.push([label, values.join(", ")]);
+            };
+            const addDateRow = (propertyId, label) => {
+                const value = formatWikidataDate(getClaimValues(entity, propertyId)[0]);
+                if (value) rows.push([label, escapeHTML(value)]);
+            };
+            const addCoordinateRow = () => {
+                const value = formatCoordinates(getClaimValues(entity, "P625")[0]);
+                if (value) rows.push(["Coordinates", escapeHTML(value)]);
+            };
+            const addUrlRow = () => {
+                const url = safeHttpUrl(getClaimValues(entity, "P856")[0]);
+                if (url) rows.push(["Official site", `<a href="${escapeAttr(url)}" target="_blank" rel="noopener">${escapeHTML(new URL(url).hostname)}</a>`]);
+            };
+
+            addLinkedRow("P31", "Instance of", 2);
+            addLinkedRow("P17", "Country", 2);
+            addLinkedRow("P27", "Citizenship", 2);
+            addLinkedRow("P106", "Occupation", 4);
+            addLinkedRow("P131", "Located in", 3);
+            addDateRow("P569", "Born");
+            addDateRow("P570", "Died");
+            addCoordinateRow();
+            addUrlRow();
+
+            factsEl.innerHTML = `<dl class="fact-grid">${rows.slice(0, 9).map(([label, value]) => `<div class="fact-row"><dt>${escapeHTML(label)}</dt><dd>${value}</dd></div>`).join("")}</dl>`;
+        } catch (error) {
+            factsEl.innerHTML = '<p class="wikidata-status">Wikidata facts could not load right now.</p>';
+        }
     }
 
     function loadSettings() {
@@ -1315,7 +1568,7 @@
         const searchText = categorySearchInput.value;
         if (!searchText.length)
             return categorySearchSelect.innerText = "";
-        const searchTarget = [...pagesArr.map(e=>e.title.toLowerCase()), ...Object.values(noPageMaps).map(e=>e.toLowerCase())];
+        const searchTarget = [...pagesArr.filter(isPublicLaunchPost).map(e=>e.title.toLowerCase()), ...Object.values(noPageMaps).map(e=>e.toLowerCase())];
         let results = searchTarget.filter(e => e.startsWith(searchText.toLowerCase())).slice(0,100);
         if (results.length < 100)
             results = [...results, ...searchTarget.filter(e => e.includes(searchText.toLowerCase()) && !results.includes(e)).slice(0,100-results.length)];
@@ -1417,6 +1670,10 @@
 
     function getPostByTitle(title) {
         return pagesArr.find(post => post.title.toLowerCase() == String(title || "").toLowerCase());
+    }
+
+    function isPublicLaunchPost(post) {
+        return !!post && !publicLaunchBlockedTitles.has(String(post.title || "").toLowerCase());
     }
 
     function isPostSaved(postId, collectionName = "Saved") {
@@ -1657,13 +1914,15 @@
             if (!resp.ok) throw new Error('Not found');
             const data = await resp.json();
             const safeTitle = escapeHTML(data.title || title);
-            const extract = data.extract_html || escapeHTML(data.extract || "");
+            const extract = `<p>${escapeHTML(data.extract || "No article summary is available from Wikipedia right now.")}</p>`;
             const thumbHtml = data.thumbnail ? `<img class="article-thumb" src="${escapeAttr(data.thumbnail.source)}" alt="${escapeAttr(data.title || title)}" loading="lazy" />` : '';
             const articleUrl = getArticleLink(title);
+            const wikidataId = isWikidataQid(data.wikibase_item) ? data.wikibase_item : "";
             articleContent.innerHTML = `
                 <h1>${safeTitle}</h1>
                 <div class="article-extract">${extract}</div>
                 ${thumbHtml}
+                ${renderSourcePanel({ articleUrl, wikidataId })}
                 ${renderArticleTrails(title)}
             `;
             articleFooter.innerHTML = `
@@ -1678,17 +1937,20 @@
             articleFooter.querySelector(".save-article").onclick = () => saveArticleToCollection(title, articleFooter.querySelector(".save-article"));
             articleFooter.querySelector(".card-article").onclick = () => createShareCard(data.title || title, data.extract || "");
             articleFooter.querySelector(".share-article").onclick = () => shareLink(data.title || title, articleUrl, articleFooter.querySelector(".share-article"));
+            loadWikidataFacts(wikidataId);
         } catch (e) {
             const localPost = getPostByTitle(title);
             const fallbackText = localPost?.text || "Live Wikipedia text is unavailable right now. The source link still opens the article when it is available.";
+            const articleUrl = getArticleLink(title);
             articleContent.innerHTML = `
                 <h1>${escapeHTML(title)}</h1>
                 <div class="article-extract">${escapeHTML(fallbackText)}</div>
                 <p class="load-error">Live article text could not load.</p>
+                ${renderSourcePanel({ articleUrl, wikidataId: "" })}
                 ${renderArticleTrails(title)}
             `;
             articleFooter.innerHTML = `
-                <a class="read-more" href="${escapeAttr(getArticleLink(title))}" target="_blank" rel="noopener">Read on Wikipedia</a>
+                <a class="read-more" href="${escapeAttr(articleUrl)}" target="_blank" rel="noopener">Read on Wikipedia</a>
                 <button class="save-article" type="button">Save</button>
                 <button class="card-article" type="button">Make card</button>
                 <button class="share-article" type="button">Share link</button>
@@ -1698,7 +1960,7 @@
             });
             articleFooter.querySelector(".save-article").onclick = () => saveArticleToCollection(title, articleFooter.querySelector(".save-article"));
             articleFooter.querySelector(".card-article").onclick = () => createShareCard(title, fallbackText);
-            articleFooter.querySelector(".share-article").onclick = () => shareLink(title, getArticleLink(title), articleFooter.querySelector(".share-article"));
+            articleFooter.querySelector(".share-article").onclick = () => shareLink(title, articleUrl, articleFooter.querySelector(".share-article"));
         }
     }
 
@@ -1720,7 +1982,7 @@
         if (!source?.allCategories) return [];
         const sourceCats = source.allCategories;
         return pagesArr
-            .filter(post => post.id !== source.id && post.allCategories)
+            .filter(post => post.id !== source.id && post.allCategories && isPublicLaunchPost(post))
             .map(post => {
                 let score = 0;
                 post.allCategories.forEach(cat => {
@@ -1794,7 +2056,7 @@
         ctx.font = "700 34px Segoe UI, sans-serif";
         ctx.fillText("MzansiPedia", 92, 1200);
         ctx.font = "400 26px Segoe UI, sans-serif";
-        ctx.fillText("South African Wikipedia stories", 92, 1242);
+        ctx.fillText("South African knowledge from Wikipedia and Wikidata", 92, 1242);
         canvas.toBlob(blob => {
             if (!blob) return;
             downloadShareCard(blob);
@@ -1817,7 +2079,9 @@
 
     function showRandomArticle() {
         if (!pagesArr.length) return;
-        const post = pagesArr[Math.floor(Math.random() * pagesArr.length)];
+        const posts = pagesArr.filter(isPublicLaunchPost);
+        const sourcePosts = posts.length ? posts : pagesArr;
+        const post = sourcePosts[Math.floor(Math.random() * sourcePosts.length)];
         showArticle(null, post.title);
     }
 
@@ -1858,7 +2122,7 @@
         const el = document.getElementById("searchResults");
         if (!query || query.length < 2) { el.classList.remove("show"); return; }
         const q = query.toLowerCase();
-        const results = pagesArr.filter(p => p.title.toLowerCase().includes(q)).slice(0, 15);
+        const results = pagesArr.filter(isPublicLaunchPost).filter(p => p.title.toLowerCase().includes(q)).slice(0, 15);
         if (!results.length) { el.classList.remove("show"); return; }
         el.innerHTML = results.map(p => {
             const cat = getCategoryLabel(p);
@@ -2101,10 +2365,12 @@
     }
 
     function getFeedPool() {
+        const publicPosts = pagesArr.filter(isPublicLaunchPost);
+        const sourcePosts = publicPosts.length ? publicPosts : pagesArr;
         if (activeFeedFilter == "for-you")
-            return pagesArr;
-        const filtered = pagesArr.filter(post => postMatchesFeedFilter(post, activeFeedFilter));
-        return filtered.length ? filtered : pagesArr;
+            return sourcePosts;
+        const filtered = sourcePosts.filter(post => postMatchesFeedFilter(post, activeFeedFilter));
+        return filtered.length ? filtered : sourcePosts;
     }
 
     function postMatchesFeedFilter(post, filterName) {

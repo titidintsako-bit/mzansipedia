@@ -6,7 +6,7 @@ South African Wikipedia stories in a local-first reading feed.
 
 MzansiPedia turns South African Wikipedia topics into a reading feed. It is filtered toward South African history, culture, places, people, sport, wildlife, languages, and food.
 
-Your likes, profile, and ranking scores stay in browser storage. The bundled dataset works offline after it loads; live article summaries and images are requested from Wikipedia and Wikimedia when a network is available.
+Your likes, profile, and ranking scores stay in browser storage. The bundled dataset works offline after it loads; live article summaries and images are requested from Wikipedia and Wikimedia when a network is available. Reader pages also request Wikidata facts when Wikipedia returns a matching Wikidata item.
 
 ## Try it
 
@@ -17,7 +17,7 @@ Your likes, profile, and ranking scores stay in browser storage. The bundled dat
 
 The repository is public on GitHub under AGPLv3. The app does not require accounts, API keys, server-side databases, or analytics.
 
-Profile choices, likes, ranking scores, and collections stay in local browser storage. Network requests go to the hosted static files and to Wikipedia/Wikimedia article summary and image endpoints while browsing.
+Profile choices, likes, ranking scores, and collections stay in local browser storage. Network requests go to the hosted static files, Wikipedia/Wikimedia article summary and image endpoints, and Wikidata entity endpoints while browsing.
 
 Do not commit local `.env*`, `.vercel/`, dependency folders, or generated test output; those paths are ignored.
 
@@ -27,7 +27,7 @@ Do not commit local `.env*`, `.vercel/`, dependency folders, or generated test o
 - Articles are shown as tweet-style cards in an infinite vertical feed.
 - The algorithm (simple point-scoring based on categories you engage with) picks what to show next.
 - Cards show bundled summaries instantly, then fetch fresh text from Wikipedia's live API when online.
-- Click a card to open the full article reader with live Wikipedia content.
+- Click a card to open the full article reader with live Wikipedia content, source links, and Wikidata facts where available.
 - Filter the feed by topic lenses such as History, People, Places, Culture, Wildlife, and Sport.
 - Save articles into local collections and generate shareable knowledge cards.
 - Article pages suggest related follow-up reads from the local dataset.
@@ -46,6 +46,10 @@ To pick the next post, 10,000 random articles are sampled and scored. Then:
 - 42% chance: highest score wins
 - 18% chance: completely random
 
+## Sources
+
+Wikipedia summaries and images are shown with direct source links. Wikidata structured facts are shown as contextual metadata, not as a replacement for the source article. Sensitive or contested history should still be verified from the linked source pages.
+
 ## Dataset
 
 The dataset is generated from [Simple Wikipedia dumps](https://dumps.wikimedia.org/simplewiki/) filtered through South African category patterns and title keywords. See `process_data.py` for the filter logic.
@@ -56,4 +60,4 @@ This project is a fork of [Xikipedia](https://github.com/rebane2001/xikipedia) b
 
 ## License
 
-AGPLv3. See [LICENSE](LICENSE). The included dataset (`smoldata.json.br`) contains data from Wikipedia, which is available under the [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) license.
+AGPLv3. See [LICENSE](LICENSE). The included dataset (`smoldata.json.br`) contains data from Wikipedia, which is available under the [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) license. Wikidata facts are available under [CC0](https://www.wikidata.org/wiki/Wikidata:Licensing).
