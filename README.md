@@ -31,6 +31,7 @@ Do not commit local `.env*`, `.vercel/`, dependency folders, or generated test o
 - Filter the feed by topic lenses such as History, People, Places, Culture, Wildlife, and Sport.
 - Save articles into local collections and generate shareable knowledge cards.
 - Article pages suggest related follow-up reads from the local dataset.
+- Switch between Auto, Light, and Dark themes from Settings.
 
 ## Algorithm
 

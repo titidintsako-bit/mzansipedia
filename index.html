@@ -10,10 +10,12 @@
     <meta property="og:description" content="A local-first feed of South African Wikipedia stories, places, people, culture, sport, wildlife, and history.">
     <meta property="og:locale" content="en-za">
     <meta property="og:type" content="website">
+    <meta name="color-scheme" content="dark light">
     <meta content="#050806" name="theme-color" />
     <link rel="manifest" href="app.webmanifest" />
     <style>
         :root {
+            color-scheme: dark;
             --red: #C8102E;
             --gold: #FFB81C;
             --green: #007749;
@@ -27,8 +29,50 @@
             --text-secondary: #A2ABA3;
             --text-tertiary: #778279;
             --danger: #F15D5D;
+            --theme-color: #050806;
+            --glow-green: rgba(0,119,73,0.16);
+            --glow-gold: rgba(255,184,28,0.08);
+            --feed-header-bg: rgba(5,8,6,0.82);
+            --panel-bg: rgba(17,23,19,0.94);
+            --panel-border: rgba(255,255,255,0.04);
+            --start-glow: rgba(255,184,28,0.07);
+            --dialog-backdrop: rgba(91,112,131,0.4);
+            --source-panel-bg: rgba(5,8,6,0.46);
+            --soft-border: rgba(255,255,255,0.05);
+            --collection-bg: rgba(5,8,6,0.38);
+            --selected-soft: rgba(0,119,73,0.08);
+            --danger-soft: rgba(241,93,93,0.1);
             --safe-bottom: 0px;
             --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        html[data-theme="light"] {
+            color-scheme: light;
+            --red: #B91C35;
+            --gold: #B97C00;
+            --green: #006B43;
+            --blue: #0B65B9;
+            --bg: #F6F8F4;
+            --bg-card: #FFFFFF;
+            --bg-raised: #EEF3EB;
+            --bg-hover: #E9EFE7;
+            --border: #D4DED2;
+            --text-primary: #142018;
+            --text-secondary: #526158;
+            --text-tertiary: #728078;
+            --danger: #B4232C;
+            --theme-color: #F6F8F4;
+            --glow-green: rgba(0,107,67,0.12);
+            --glow-gold: rgba(185,124,0,0.10);
+            --feed-header-bg: rgba(246,248,244,0.9);
+            --panel-bg: rgba(255,255,255,0.94);
+            --panel-border: rgba(20,32,24,0.08);
+            --start-glow: rgba(185,124,0,0.08);
+            --dialog-backdrop: rgba(35,47,41,0.28);
+            --source-panel-bg: rgba(246,248,244,0.74);
+            --soft-border: rgba(20,32,24,0.08);
+            --collection-bg: rgba(246,248,244,0.72);
+            --selected-soft: rgba(0,107,67,0.10);
+            --danger-soft: rgba(180,35,44,0.10);
         }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html, body {
@@ -37,8 +81,8 @@
             min-width: 0;
             overflow-x: hidden;
             background:
-                radial-gradient(circle at 12% 0%, rgba(0,119,73,0.16), transparent 28rem),
-                radial-gradient(circle at 90% 14%, rgba(255,184,28,0.08), transparent 24rem),
+                radial-gradient(circle at 12% 0%, var(--glow-green), transparent 28rem),
+                radial-gradient(circle at 90% 14%, var(--glow-gold), transparent 24rem),
                 var(--bg);
             color: var(--text-primary);
             font-family: "Aptos", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
@@ -116,7 +160,7 @@
             position: sticky;
             top: 0;
             z-index: 10;
-            background: rgba(5,8,6,0.82);
+            background: var(--feed-header-bg);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
         }
@@ -315,8 +359,8 @@
             color: var(--text-secondary);
         }
         .trending-box {
-            background: rgba(17,23,19,0.94);
-            border: 1px solid rgba(255,255,255,0.04);
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
             border-radius: 16px;
             overflow: hidden;
             margin-bottom: 16px;
@@ -386,7 +430,7 @@
             inset: 0;
             margin: auto;
             background:
-                linear-gradient(160deg, rgba(255,184,28,0.07), transparent 34%),
+                linear-gradient(160deg, var(--start-glow), transparent 34%),
                 var(--bg-card);
             border: 1px solid var(--border);
             width: min(92dvw, 480px);
@@ -511,7 +555,7 @@
         .load-error a { color: var(--blue); }
 
         /* === DIALOGS === */
-        ::backdrop { background: rgba(91,112,131,0.4); }
+        ::backdrop { background: var(--dialog-backdrop); }
         .modal {
             &[open] { display: flex; }
             flex-direction: column;
@@ -610,7 +654,7 @@
         .modal-btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-primary); }
         .modal-btn-outline:hover { background: var(--bg-hover); }
         .modal-btn-danger { background: transparent; border: 1px solid var(--danger); color: var(--danger); }
-        .modal-btn-danger:hover { background: rgba(241,93,93,0.1); }
+        .modal-btn-danger:hover { background: var(--danger-soft); }
         profile-entry {
             display: flex;
             justify-content: space-between;
@@ -623,7 +667,7 @@
             transition: background 0.15s;
         }
         profile-entry:hover { background: var(--bg-hover); }
-        profile-entry.current { border-color: var(--green); background: rgba(0,119,73,0.08); }
+        profile-entry.current { border-color: var(--green); background: var(--selected-soft); }
         profile-entry button {
             background: none;
             border: none;
@@ -634,7 +678,7 @@
             padding: 4px 8px;
             border-radius: 4px;
         }
-        profile-entry button:hover { background: rgba(241,93,93,0.1); }
+        profile-entry button:hover { background: var(--danger-soft); }
         #statsModal details {
             padding: 12px 0;
             border-bottom: 1px solid var(--border);
@@ -813,7 +857,7 @@
             padding: 14px;
             border: 1px solid var(--border);
             border-radius: 12px;
-            background: rgba(5,8,6,0.46);
+            background: var(--source-panel-bg);
         }
         .source-panel h3 {
             font-size: 14px;
@@ -858,7 +902,7 @@
             grid-template-columns: minmax(96px, 132px) minmax(0, 1fr);
             gap: 10px;
             padding: 8px 0;
-            border-top: 1px solid rgba(255,255,255,0.05);
+            border-top: 1px solid var(--soft-border);
         }
         .fact-row:first-child { border-top: 0; padding-top: 0; }
         .fact-row dt {
@@ -936,7 +980,7 @@
             border-radius: 12px;
             padding: 12px;
             margin-bottom: 12px;
-            background: rgba(5,8,6,0.38);
+            background: var(--collection-bg);
         }
         .collection-card h3 {
             font-size: 16px;
@@ -947,7 +991,7 @@
             padding: 7px 0;
             color: var(--text-primary);
             font-size: 14px;
-            border-top: 1px solid rgba(255,255,255,0.04);
+            border-top: 1px solid var(--soft-border);
         }
         .collection-empty {
             color: var(--text-secondary);
@@ -1202,6 +1246,7 @@
             <span class="setting-group-title">Theme</span>
             <div class="radio-picker" role="radiogroup" aria-label="Theme picker">
                 <label><input type="radio" name="theme" id="theme-auto" checked>Auto</label>
+                <label><input type="radio" name="theme" id="theme-light">Light</label>
                 <label><input type="radio" name="theme" id="theme-dark">Dark</label>
             </div>
             </div>
@@ -1292,7 +1337,7 @@
     const defaultCategories = ["history of south africa", "south african culture", "geography of south africa", "south african wildlife", "south african sport", "south african cuisine", "south african music", "south african people", "apartheid in south africa", "south african languages", "south african fashion", "south african art"];
     let postsWithoutLike = 0;
 
-    const HTML_VERSION = "2.4.1";
+    const HTML_VERSION = "2.5.0";
 
     const wikidataEntityCache = new Map();
     const wikidataLabelCache = new Map();
@@ -1301,6 +1346,7 @@
     const publicLaunchBlockedTitles = new Set([
         "aphaenogaster kimberleyensis",
         "big five",
+        "electoral district of north west central",
         "electoral district of kimberley",
         "fariduddin ganjshakar",
         "kid krrish: shakalaka africa",
@@ -1429,6 +1475,24 @@
         return "";
     }
 
+    function normalizeThemeSetting(value) {
+        return ["theme-auto", "theme-light", "theme-dark"].includes(value) ? value : "theme-auto";
+    }
+
+    function resolveTheme(themeSetting) {
+        const normalized = normalizeThemeSetting(themeSetting);
+        if (normalized === "theme-light") return "light";
+        if (normalized === "theme-dark") return "dark";
+        return window.matchMedia?.("(prefers-color-scheme: light)")?.matches ? "light" : "dark";
+    }
+
+    function applyTheme(themeSetting) {
+        const resolvedTheme = resolveTheme(themeSetting);
+        document.documentElement.dataset.theme = resolvedTheme;
+        document.documentElement.dataset.themeChoice = normalizeThemeSetting(themeSetting);
+        document.querySelector('meta[name="theme-color"]')?.setAttribute("content", getComputedStyle(document.documentElement).getPropertyValue("--theme-color").trim() || (resolvedTheme === "light" ? "#F6F8F4" : "#050806"));
+    }
+
     function renderSourcePanel({ articleUrl, wikidataId }) {
         const wikidataUrl = isWikidataQid(wikidataId) ? `https://www.wikidata.org/wiki/${wikidataId}` : "";
         return `
@@ -1509,16 +1573,19 @@
         };
         const loadedSettings = JSON.parse(localStorage.getItem("mzansipedia-settings") ?? '{}');
         const computedSettings = Object.assign(baseSettings, loadedSettings);
-        document.querySelector(`#${computedSettings.theme}`).checked = true;
+        computedSettings.theme = normalizeThemeSetting(computedSettings.theme);
+        document.getElementById(computedSettings.theme).checked = true;
         document.getElementById("setting-storeData").checked = computedSettings.storeData;
         document.getElementById("setting-openMainWiki").checked = computedSettings.openMainWiki;
+        applyTheme(computedSettings.theme);
         return computedSettings;
     }
 
     function saveSettings() {
-        settings.theme = document.querySelector('[name=theme]:checked')?.id ?? "theme-auto";
+        settings.theme = normalizeThemeSetting(document.querySelector('[name=theme]:checked')?.id);
         settings.storeData = document.getElementById("setting-storeData").checked;
         settings.openMainWiki = document.getElementById("setting-openMainWiki").checked;
+        applyTheme(settings.theme);
         localStorage.setItem("mzansipedia-settings", JSON.stringify(settings));
     }
 
@@ -1543,6 +1610,11 @@
     }
 
     const settings = loadSettings();
+    const systemThemeQuery = window.matchMedia?.("(prefers-color-scheme: light)");
+    systemThemeQuery?.addEventListener?.("change", () => {
+        if (settings.theme === "theme-auto")
+            applyTheme(settings.theme);
+    });
 
     const DATA_SIZE = settings.dataSize;
     const DATA_URL = `smoldata.json?${DATA_SIZE}`;
@@ -2537,14 +2609,14 @@ async function* streamToAsyncIterable(stream) {
             startScreen.hidePopover();
             startScreen.remove();
             setTimeout(saveProfile,100);
-            document.querySelector('meta[name="theme-color"]').setAttribute("content", "#050806");
+            applyTheme(settings.theme);
             requestAnimationFrame(render);
         }
         initProfile();
         if (hasProfile) {
             startScreen.remove();
             setTimeout(saveProfile,100);
-            document.querySelector('meta[name="theme-color"]').setAttribute("content", "#050806");
+            applyTheme(settings.theme);
             requestAnimationFrame(render);
         }
     }
