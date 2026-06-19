@@ -762,6 +762,225 @@
         .posts {
             &:not(:has(.post)) { display: none; }
         }
+        .school-mode[hidden] { display: none; }
+        .school-mode {
+            padding: 0 0 96px;
+        }
+        .school-hero {
+            padding: 20px 16px 18px;
+            border-bottom: 1px solid var(--border);
+            background:
+                linear-gradient(160deg, var(--selected-soft), transparent 48%),
+                var(--bg);
+        }
+        .school-kicker {
+            color: var(--green);
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .school-hero h2 {
+            margin-top: 6px;
+            font-size: 28px;
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+        }
+        .school-hero p {
+            margin-top: 10px;
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.55;
+        }
+        .school-controls {
+            display: grid;
+            gap: 10px;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-card);
+        }
+        .school-control-group {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .school-control-group::-webkit-scrollbar { display: none; }
+        .school-chip {
+            flex: 0 0 auto;
+            border: 1px solid var(--border);
+            border-radius: 9999px;
+            background: transparent;
+            color: var(--text-primary);
+            padding: 9px 12px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .school-chip.active {
+            background: var(--green);
+            border-color: var(--green);
+            color: #FFF;
+        }
+        .school-grid {
+            display: grid;
+            gap: 0;
+        }
+        .mission-row {
+            width: 100%;
+            text-align: left;
+            border: 0;
+            border-bottom: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-primary);
+            padding: 14px 16px;
+            cursor: pointer;
+        }
+        .mission-row:hover { background: var(--bg-hover); }
+        .mission-row.active { background: var(--selected-soft); }
+        .mission-row strong {
+            display: block;
+            font-size: 15px;
+            line-height: 1.35;
+        }
+        .mission-row span {
+            display: block;
+            margin-top: 4px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .mission-detail {
+            padding: 16px;
+        }
+        .mission-head {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 14px;
+            margin-bottom: 14px;
+        }
+        .mission-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .mission-pill {
+            border: 1px solid var(--border);
+            border-radius: 9999px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 800;
+            padding: 5px 8px;
+        }
+        .mission-head h3 {
+            font-size: 23px;
+            line-height: 1.16;
+            letter-spacing: -0.02em;
+        }
+        .mission-head p {
+            margin-top: 8px;
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.55;
+        }
+        .school-action-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .school-action {
+            border: 1px solid var(--border);
+            border-radius: 9999px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 9px 12px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .school-action.primary {
+            background: var(--green);
+            border-color: var(--green);
+            color: #FFF;
+        }
+        .study-cards,
+        .quiz-list {
+            display: grid;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .study-card,
+        .quiz-item,
+        .exam-box {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-card);
+            padding: 13px;
+        }
+        .study-card span,
+        .quiz-item span,
+        .exam-box span {
+            display: block;
+            color: var(--green);
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 6px;
+        }
+        .study-card h4,
+        .quiz-item h4,
+        .exam-box h4 {
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+        .study-card p,
+        .quiz-item p,
+        .exam-box p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.55;
+        }
+        .quiz-options {
+            display: grid;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .quiz-option {
+            width: 100%;
+            text-align: left;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg);
+            color: var(--text-primary);
+            padding: 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .quiz-option.correct {
+            border-color: var(--green);
+            background: var(--selected-soft);
+        }
+        .quiz-option.incorrect {
+            border-color: var(--danger);
+            background: var(--danger-soft);
+        }
+        .quiz-feedback {
+            min-height: 20px;
+            margin-top: 8px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.45;
+        }
+        .exam-box {
+            margin-top: 14px;
+        }
+        .model-answer {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--soft-border);
+        }
 
         /* === FULL IMAGE === */
         .fullImg {
@@ -1059,9 +1278,13 @@
             <h1><span>M</span>zansiPedia</h1>
         </div>
         <nav>
-            <a class="active" onclick="return false">
+            <a class="active" data-nav-filter="for-you" onclick="setFeedFilter('for-you')">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.591 7.146L12.52 1.157c-.316-.21-.724-.21-1.04 0l-9.071 5.99c-.26.173-.409.456-.409.757v13.183c0 .502.418.913.929.913h6.638c.511 0 .929-.41.929-.913v-7.075h3.008v7.075c0 .502.418.913.929.913h6.638c.511 0 .929-.41.929-.913V7.904c0-.301-.158-.584-.408-.758z"/></svg>
                 <span>Home</span>
+            </a>
+            <a data-nav-filter="school" onclick="setFeedFilter('school')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg>
+                <span>School</span>
             </a>
             <a onclick="showCollectionsModal()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
@@ -1098,10 +1321,12 @@
                 <button class="feed-tab" data-filter="culture">Culture</button>
                 <button class="feed-tab" data-filter="wildlife">Wildlife</button>
                 <button class="feed-tab" data-filter="sport">Sport</button>
+                <button class="feed-tab" data-filter="school">School</button>
                 <button class="feed-tab" onclick="showAboutModal()">About</button>
             </div>
         </div>
         <div class="posts"></div>
+        <section class="school-mode" id="schoolMode" hidden></section>
     </main>
 
     <!-- RIGHT SIDEBAR -->
@@ -1143,8 +1368,11 @@
     <!-- BOTTOM NAV (mobile) -->
     <div class="bottom-nav">
         <div class="bottom-nav-inner">
-            <button onclick="return false">
+            <button onclick="setFeedFilter('for-you')" aria-label="Home" title="Home">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.591 7.146L12.52 1.157c-.316-.21-.724-.21-1.04 0l-9.071 5.99c-.26.173-.409.456-.409.757v13.183c0 .502.418.913.929.913h6.638c.511 0 .929-.41.929-.913v-7.075h3.008v7.075c0 .502.418.913.929.913h6.638c.511 0 .929-.41.929-.913V7.904c0-.301-.158-.584-.408-.758z"/></svg>
+            </button>
+            <button onclick="setFeedFilter('school')" aria-label="School mode" title="School mode">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg>
             </button>
             <button onclick="showStatsModal()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
@@ -1331,13 +1559,16 @@
     let timeSpentTotal = 0;
     let profileName = "Default";
     let activeFeedFilter = "for-you";
+    let activeSchoolSubject = "history";
+    let activeSchoolGrade = "10";
+    let activeSchoolMissionId = "history-10-apartheid";
 
     let lastSpentTime = Date.now();
 
     const defaultCategories = ["history of south africa", "south african culture", "geography of south africa", "south african wildlife", "south african sport", "south african cuisine", "south african music", "south african people", "apartheid in south africa", "south african languages", "south african fashion", "south african art"];
     let postsWithoutLike = 0;
 
-    const HTML_VERSION = "2.5.0";
+    const HTML_VERSION = "2.6.0";
 
     const wikidataEntityCache = new Map();
     const wikidataLabelCache = new Map();
@@ -1381,6 +1612,207 @@
         wildlife: ["wildlife", "animal", "bird", "plant", "conservation", "national park"],
         sport: ["sport", "rugby", "cricket", "football", "athlete", "olympic"],
     };
+
+    const schoolMissions = [
+        {
+            id: "history-10-apartheid",
+            subject: "history",
+            grade: "10",
+            title: "Apartheid in 10 minutes",
+            subtitle: "Understand the system, the laws, and why it shaped where people lived.",
+            sourceTitle: "Apartheid",
+            time: "10 min",
+            tags: ["History", "Cause and effect", "Exam basics"],
+            cards: [
+                ["Big idea", "Apartheid was a legal system of racial segregation. It controlled movement, land, education, jobs, and political rights."],
+                ["Why it mattered", "The system affected everyday life. People were classified by race, separated by law, and denied equal opportunities."],
+                ["Exam clue", "When a question asks 'impact', answer with people, places, economy, education, and resistance."],
+                ["Memory hook", "Apartheid was not only attitude. It was law, police power, land control, and state planning."],
+            ],
+            quiz: [
+                {
+                    q: "Which answer best describes apartheid?",
+                    options: ["A legal system of racial separation", "A single protest march", "A sports tournament"],
+                    answer: 0,
+                    explain: "Apartheid was a state-backed legal system, not one event."
+                },
+                {
+                    q: "A strong exam answer about apartheid should include...",
+                    options: ["Only dates", "Effects on people and places", "Only famous leaders"],
+                    answer: 1,
+                    explain: "Dates help, but marks usually come from explaining effects and evidence."
+                },
+            ],
+            examPrompt: "Explain two ways apartheid laws affected where South Africans could live and work.",
+            modelAnswer: "Apartheid laws separated people by race and controlled where they could live. Many black South Africans were forced into townships or homelands far from economic centres. This also affected work because movement and job opportunities were restricted by passes, policing, and unequal access to education.",
+            related: ["Racial segregation", "Bantustan", "Hendrik Verwoerd", "African National Congress"],
+        },
+        {
+            id: "history-11-resistance",
+            subject: "history",
+            grade: "11",
+            title: "Resistance: Sharpeville to Soweto",
+            subtitle: "Build a clear timeline of protest, state response, and youth resistance.",
+            sourceTitle: "Sharpeville massacre",
+            time: "12 min",
+            tags: ["History", "Timeline", "Resistance"],
+            cards: [
+                ["Start with context", "Resistance grew because apartheid limited rights, movement, education, and political voice."],
+                ["Sharpeville", "Sharpeville became a turning point because protest, policing, and international attention collided."],
+                ["Soweto", "The Soweto uprising showed the role of students and education in anti-apartheid resistance."],
+                ["Write like this", "Event -> cause -> response -> consequence. That structure keeps exam answers clean."],
+            ],
+            quiz: [
+                {
+                    q: "What should a timeline answer include?",
+                    options: ["Random facts", "Cause, event, response, consequence", "Only biographies"],
+                    answer: 1,
+                    explain: "A timeline needs order and links between events."
+                },
+                {
+                    q: "Why are student protests important in this topic?",
+                    options: ["They show youth agency", "They avoid politics", "They only involve sport"],
+                    answer: 0,
+                    explain: "Student action shows how young people shaped resistance."
+                },
+            ],
+            examPrompt: "Compare Sharpeville and the Soweto uprising as examples of resistance to apartheid.",
+            modelAnswer: "Both events were forms of resistance to apartheid, but they happened in different contexts. Sharpeville centred on protest against pass laws and led to heavy state violence and global attention. Soweto was driven by students and education policy, showing that young people became important political actors. Both increased opposition to apartheid and exposed the violence of the system.",
+            related: ["Soweto uprising", "Steve Biko", "Umkhonto we Sizwe", "Comprehensive Anti-Apartheid Act"],
+        },
+        {
+            id: "history-12-democracy",
+            subject: "history",
+            grade: "12",
+            title: "From prison to democracy",
+            subtitle: "Connect Mandela, negotiations, elections, and the meaning of 1994.",
+            sourceTitle: "Nelson Mandela",
+            time: "12 min",
+            tags: ["History", "Democracy", "Essay practice"],
+            cards: [
+                ["Core story", "South Africa's transition was not one person's work. It involved resistance, negotiation, pressure, leadership, and public participation."],
+                ["Mandela", "Mandela is central because his life connects resistance, imprisonment, negotiation, and democratic leadership."],
+                ["1994", "The 1994 election matters because it marked fully represented democratic voting and a new political order."],
+                ["Essay move", "Avoid hero-only answers. Include organisations, ordinary people, negotiations, and international pressure."],
+            ],
+            quiz: [
+                {
+                    q: "A stronger Grade 12 essay should...",
+                    options: ["Only praise one leader", "Explain several forces behind change", "Ignore context"],
+                    answer: 1,
+                    explain: "High-mark essays explain multiple causes and connect them."
+                },
+                {
+                    q: "Why is 1994 important?",
+                    options: ["It was South Africa's first fully represented democratic election", "It ended geography", "It created apartheid"],
+                    answer: 0,
+                    explain: "1994 marks democratic transition through a fully represented election."
+                },
+            ],
+            examPrompt: "Discuss the factors that helped South Africa move from apartheid to democracy.",
+            modelAnswer: "South Africa's transition to democracy came from internal resistance, negotiations, leadership, and international pressure. Organisations and communities challenged apartheid over many decades. Leaders such as Nelson Mandela helped negotiate a peaceful transition, while the 1994 election gave citizens a new democratic voice. The change was therefore political, social, and international.",
+            related: ["1994 South African general election", "F. W. de Klerk", "Rivonia Trial", "President of South Africa"],
+        },
+        {
+            id: "tourism-10-heritage",
+            subject: "tourism",
+            grade: "10",
+            title: "Heritage sites tourists remember",
+            subtitle: "Learn how places become attractions through story, value, and visitor experience.",
+            sourceTitle: "Robben Island",
+            time: "10 min",
+            tags: ["Tourism", "Heritage", "Attractions"],
+            cards: [
+                ["Tourism lens", "A tourist attraction is not only a place. It is a place plus a story, access, safety, and visitor meaning."],
+                ["Robben Island", "Robben Island is powerful because it connects place, history, memory, and democratic struggle."],
+                ["Cradle of Humankind", "The Cradle of Humankind links tourism with science, heritage, and human origins."],
+                ["Good answer", "When describing an attraction, mention location, reason to visit, target tourist, and responsible behaviour."],
+            ],
+            quiz: [
+                {
+                    q: "What makes a heritage attraction strong?",
+                    options: ["Only a nice view", "A clear story and cultural value", "Being expensive"],
+                    answer: 1,
+                    explain: "Heritage tourism depends on meaning, story, preservation, and visitor learning."
+                },
+                {
+                    q: "Responsible tourism at heritage sites means...",
+                    options: ["Respecting rules and local meaning", "Taking anything as a souvenir", "Ignoring guides"],
+                    answer: 0,
+                    explain: "Responsible tourism protects the site and respects communities."
+                },
+            ],
+            examPrompt: "Choose one South African heritage attraction and explain why tourists visit it.",
+            modelAnswer: "Robben Island attracts tourists because it is linked to South Africa's political history and the struggle against apartheid. Visitors can learn about imprisonment, resistance, and democracy. It is valuable because it combines a real place with a powerful national story, so tourists should behave respectfully and follow site rules.",
+            related: ["Cradle of Humankind", "Vredefort crater", "Voortrekker Monument", "Nelson Mandela"],
+        },
+        {
+            id: "tourism-11-itinerary",
+            subject: "tourism",
+            grade: "11",
+            title: "Build a 3-day Cape Town itinerary",
+            subtitle: "Practise choosing attractions that balance nature, culture, transport, and safety.",
+            sourceTitle: "Cape Town",
+            time: "12 min",
+            tags: ["Tourism", "Itinerary", "Planning"],
+            cards: [
+                ["Day planning", "A good itinerary groups nearby activities so tourists waste less time travelling."],
+                ["Balance", "Mix nature, culture, food, shopping, and rest. A trip should not feel like a checklist."],
+                ["Cape Town", "Cape Town works well because it offers city attractions, heritage, coastline, and Table Mountain."],
+                ["Safety", "Tourism answers should include transport, weather, cost, accessibility, and basic safety advice."],
+            ],
+            quiz: [
+                {
+                    q: "A good itinerary should mainly...",
+                    options: ["Reduce travel time and match visitor interests", "Add random far-away places", "Ignore weather"],
+                    answer: 0,
+                    explain: "Good planning considers distance, time, visitor needs, and conditions."
+                },
+                {
+                    q: "For Table Mountain, a useful tourist tip is...",
+                    options: ["Check weather and cableway conditions", "Never bring water", "Ignore closing times"],
+                    answer: 0,
+                    explain: "Weather and operating times affect tourist safety and experience."
+                },
+            ],
+            examPrompt: "Plan one day in Cape Town for first-time tourists. Include two attractions and one safety tip.",
+            modelAnswer: "A first-time tourist day could include Table Mountain in the morning and the V&A Waterfront later because the activities are popular and easy to combine. The tourist should check weather conditions before visiting Table Mountain and use reliable transport. This gives a mix of nature, views, shopping, and food without too much travel time.",
+            related: ["Table Mountain", "Cape of Good Hope", "Robben Island", "Cape Town Stadium"],
+        },
+        {
+            id: "tourism-12-responsible",
+            subject: "tourism",
+            grade: "12",
+            title: "Responsible tourism choices",
+            subtitle: "Make tourism decisions that protect places and still support local economies.",
+            sourceTitle: "Drakensberg",
+            time: "12 min",
+            tags: ["Tourism", "Sustainability", "Case study"],
+            cards: [
+                ["Core idea", "Responsible tourism asks: who benefits, what gets protected, and what damage must be reduced?"],
+                ["Environment", "Natural attractions need visitor limits, waste control, trail care, and respect for wildlife."],
+                ["Community", "Tourism should create local jobs and respect local culture instead of treating communities like props."],
+                ["Case study", "The Drakensberg shows how scenery, heritage, hiking, and conservation can fit into one tourism answer."],
+            ],
+            quiz: [
+                {
+                    q: "Responsible tourism tries to balance...",
+                    options: ["Profit, people, and environment", "Only profit", "Only social media photos"],
+                    answer: 0,
+                    explain: "A strong answer balances economic, social, and environmental impact."
+                },
+                {
+                    q: "A practical environmental action is...",
+                    options: ["Stay on marked trails", "Leave litter", "Feed wild animals"],
+                    answer: 0,
+                    explain: "Marked trails help protect fragile natural areas."
+                },
+            ],
+            examPrompt: "Explain how a natural attraction can be managed responsibly while still attracting tourists.",
+            modelAnswer: "A natural attraction can be managed responsibly by limiting damage, guiding visitor movement, controlling waste, and educating tourists. Local communities should benefit through jobs, guiding, and small businesses. This allows tourists to enjoy the attraction while protecting the environment and keeping tourism useful for the area.",
+            related: ["Table Mountain", "Cape flower region", "Vredefort crater", "Limpopo River"],
+        },
+    ];
 
     function escapeHTML(value) {
         return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -1620,6 +2052,7 @@
     const DATA_URL = `smoldata.json?${DATA_SIZE}`;
 
     const startBtn = document.getElementById("startBtn");
+    const schoolMode = document.getElementById("schoolMode");
     const categoryPickList = document.getElementById("categoryPickList");
     const categorySearch = document.getElementById("categorySearch");
     const categorySearchInput = categorySearch.querySelector("input");
@@ -2176,20 +2609,163 @@
 
     function initFeedTabs() {
         document.querySelectorAll(".feed-tab[data-filter]").forEach(tab => {
-            tab.onclick = () => {
-                activeFeedFilter = tab.dataset.filter;
-                document.querySelectorAll(".feed-tab[data-filter]").forEach(item => item.classList.toggle("active", item === tab));
-                resetFeed();
-            };
+            tab.onclick = () => setFeedFilter(tab.dataset.filter);
         });
+    }
+
+    function setFeedFilter(filterName) {
+        activeFeedFilter = filterName || "for-you";
+        document.querySelectorAll(".feed-tab[data-filter]").forEach(item => item.classList.toggle("active", item.dataset.filter === activeFeedFilter));
+        document.querySelectorAll(".sidebar nav a[data-nav-filter]").forEach(item => item.classList.toggle("active", item.dataset.navFilter === activeFeedFilter));
+        resetFeed();
     }
 
     function resetFeed() {
         if (!pagesArr.length) return;
         document.querySelector(".posts").innerText = "";
+        schoolMode.hidden = activeFeedFilter !== "school";
         window.scrollTo(0, 0);
+        if (activeFeedFilter == "school") {
+            renderSchoolMode();
+            return;
+        }
         for (let i = 0; i < 6; i++)
             createNextPost();
+    }
+
+    function getSchoolMissions() {
+        return schoolMissions.filter(mission => mission.subject === activeSchoolSubject && mission.grade === activeSchoolGrade);
+    }
+
+    function getActiveSchoolMission() {
+        const missions = getSchoolMissions();
+        return missions.find(mission => mission.id === activeSchoolMissionId) || missions[0] || schoolMissions[0];
+    }
+
+    function renderSchoolMode() {
+        const missions = getSchoolMissions();
+        const activeMission = getActiveSchoolMission();
+        activeSchoolMissionId = activeMission.id;
+        const subjectLabel = activeSchoolSubject === "history" ? "History" : "Tourism";
+        schoolMode.innerHTML = `
+            <div class="school-hero">
+                <div class="school-kicker">School Mode</div>
+                <h2>Study missions for South African learners</h2>
+                <p>Short, source-backed missions for History and Tourism. Built for learners who need the point fast, then want to test themselves before an exam or class discussion.</p>
+            </div>
+            <div class="school-controls">
+                <div class="school-control-group" aria-label="Subject picker">
+                    ${["history", "tourism"].map(subject => `<button class="school-chip ${subject === activeSchoolSubject ? "active" : ""}" type="button" data-school-subject="${subject}">${subject === "history" ? "History" : "Tourism"}</button>`).join("")}
+                </div>
+                <div class="school-control-group" aria-label="Grade picker">
+                    ${["10", "11", "12"].map(grade => `<button class="school-chip ${grade === activeSchoolGrade ? "active" : ""}" type="button" data-school-grade="${grade}">Grade ${grade}</button>`).join("")}
+                </div>
+            </div>
+            <div class="school-grid">
+                ${missions.map(mission => `
+                    <button class="mission-row ${mission.id === activeMission.id ? "active" : ""}" type="button" data-school-mission="${escapeAttr(mission.id)}">
+                        <strong>${escapeHTML(mission.title)}</strong>
+                        <span>${escapeHTML(mission.subtitle)}</span>
+                    </button>
+                `).join("")}
+            </div>
+            <div class="mission-detail">
+                <div class="mission-head">
+                    <div class="mission-meta">
+                        <span class="mission-pill">${escapeHTML(subjectLabel)}</span>
+                        <span class="mission-pill">Grade ${escapeHTML(activeMission.grade)}</span>
+                        <span class="mission-pill">${escapeHTML(activeMission.time)}</span>
+                        ${activeMission.tags.map(tag => `<span class="mission-pill">${escapeHTML(tag)}</span>`).join("")}
+                    </div>
+                    <h3>${escapeHTML(activeMission.title)}</h3>
+                    <p>${escapeHTML(activeMission.subtitle)}</p>
+                    <div class="school-action-row">
+                        <button class="school-action primary" type="button" data-school-article="${escapeAttr(activeMission.sourceTitle)}">Open source article</button>
+                        ${activeMission.related.slice(0, 3).map(title => `<button class="school-action" type="button" data-school-article="${escapeAttr(title)}">${escapeHTML(title)}</button>`).join("")}
+                    </div>
+                </div>
+                <div class="study-cards">
+                    ${activeMission.cards.map((card, index) => `
+                        <article class="study-card">
+                            <span>Card ${index + 1}</span>
+                            <h4>${escapeHTML(card[0])}</h4>
+                            <p>${escapeHTML(card[1])}</p>
+                        </article>
+                    `).join("")}
+                </div>
+                <div class="quiz-list">
+                    ${activeMission.quiz.map((item, quizIndex) => `
+                        <article class="quiz-item">
+                            <span>Quick check ${quizIndex + 1}</span>
+                            <h4>${escapeHTML(item.q)}</h4>
+                            <div class="quiz-options">
+                                ${item.options.map((option, optionIndex) => `<button class="quiz-option" type="button" data-quiz-index="${quizIndex}" data-option-index="${optionIndex}">${escapeHTML(option)}</button>`).join("")}
+                            </div>
+                            <div class="quiz-feedback" id="quizFeedback-${quizIndex}"></div>
+                        </article>
+                    `).join("")}
+                </div>
+                <div class="exam-box">
+                    <span>Exam mode</span>
+                    <h4>${escapeHTML(activeMission.examPrompt)}</h4>
+                    <p>Try answering in your own words first. Then compare your answer with the model below.</p>
+                    <div class="model-answer">
+                        <span>Model answer</span>
+                        <p>${escapeHTML(activeMission.modelAnswer)}</p>
+                    </div>
+                </div>
+                <div class="exam-box">
+                    <span>Important</span>
+                    <p>This is a study helper, not a replacement for your teacher, textbook, or official assessment guidelines. Use it to understand the topic, then check your class notes.</p>
+                </div>
+            </div>
+        `;
+        bindSchoolMode();
+    }
+
+    function bindSchoolMode() {
+        schoolMode.querySelectorAll("[data-school-subject]").forEach(button => {
+            button.onclick = () => {
+                activeSchoolSubject = button.dataset.schoolSubject;
+                activeSchoolMissionId = getSchoolMissions()[0]?.id || activeSchoolMissionId;
+                renderSchoolMode();
+            };
+        });
+        schoolMode.querySelectorAll("[data-school-grade]").forEach(button => {
+            button.onclick = () => {
+                activeSchoolGrade = button.dataset.schoolGrade;
+                activeSchoolMissionId = getSchoolMissions()[0]?.id || activeSchoolMissionId;
+                renderSchoolMode();
+            };
+        });
+        schoolMode.querySelectorAll("[data-school-mission]").forEach(button => {
+            button.onclick = () => {
+                activeSchoolMissionId = button.dataset.schoolMission;
+                renderSchoolMode();
+            };
+        });
+        schoolMode.querySelectorAll("[data-school-article]").forEach(button => {
+            button.onclick = () => showArticle(null, button.dataset.schoolArticle);
+        });
+        const activeMission = getActiveSchoolMission();
+        schoolMode.querySelectorAll(".quiz-option").forEach(button => {
+            button.onclick = () => {
+                const quizIndex = Number(button.dataset.quizIndex);
+                const optionIndex = Number(button.dataset.optionIndex);
+                const item = activeMission.quiz[quizIndex];
+                const siblings = schoolMode.querySelectorAll(`.quiz-option[data-quiz-index="${quizIndex}"]`);
+                siblings.forEach(option => {
+                    option.classList.remove("correct", "incorrect");
+                    option.disabled = true;
+                });
+                button.classList.add(optionIndex === item.answer ? "correct" : "incorrect");
+                const correctOption = schoolMode.querySelector(`.quiz-option[data-quiz-index="${quizIndex}"][data-option-index="${item.answer}"]`);
+                correctOption?.classList.add("correct");
+                const feedback = document.getElementById(`quizFeedback-${quizIndex}`);
+                if (feedback)
+                    feedback.textContent = `${optionIndex === item.answer ? "Correct." : "Not quite."} ${item.explain}`;
+            };
+        });
     }
 
     function searchArticles(query) {
@@ -2460,7 +3036,7 @@
     }
 
     function render() {
-        if (document.documentElement.scrollHeight < scrollY+innerHeight + 1500)
+        if (activeFeedFilter !== "school" && document.documentElement.scrollHeight < scrollY+innerHeight + 1500)
             createNextPost();
         requestAnimationFrame(render);
     }
