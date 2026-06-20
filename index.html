@@ -792,6 +792,41 @@
             font-size: 15px;
             line-height: 1.55;
         }
+        .student-dashboard {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 14px;
+        }
+        .student-dashboard article {
+            min-width: 0;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--panel-bg);
+            padding: 10px;
+        }
+        .student-dashboard span {
+            display: block;
+            color: var(--text-tertiary);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .student-dashboard strong {
+            display: block;
+            margin-top: 5px;
+            color: var(--text-primary);
+            font-size: 18px;
+            line-height: 1.12;
+            overflow-wrap: anywhere;
+        }
+        .school-quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
         .school-controls {
             display: grid;
             gap: 10px;
@@ -904,6 +939,57 @@
             border-color: var(--green);
             color: #FFF;
         }
+        .school-action.is-complete {
+            border-color: var(--green);
+            background: var(--selected-soft);
+            color: var(--green);
+        }
+        .school-timer {
+            min-height: 20px;
+            margin-top: 10px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        .flashcard-grid {
+            display: grid;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .flash-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-card);
+            overflow: hidden;
+        }
+        .flash-card summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 12px 13px;
+        }
+        .flash-card summary::-webkit-details-marker { display: none; }
+        .flash-card summary span {
+            display: block;
+            color: var(--green);
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 4px;
+        }
+        .flash-card summary strong {
+            display: block;
+            font-size: 15px;
+            line-height: 1.3;
+        }
+        .flash-card p {
+            border-top: 1px solid var(--soft-border);
+            padding: 12px 13px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.55;
+        }
         .study-cards,
         .quiz-list {
             display: grid;
@@ -980,6 +1066,30 @@
             margin-top: 10px;
             padding-top: 10px;
             border-top: 1px solid var(--soft-border);
+        }
+        .school-textarea {
+            width: 100%;
+            min-height: 112px;
+            resize: vertical;
+            margin-top: 10px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg);
+            color: var(--text-primary);
+            padding: 12px;
+            font: inherit;
+            line-height: 1.55;
+        }
+        .school-textarea:focus {
+            border-color: var(--green);
+            outline: none;
+        }
+        .school-feedback,
+        .school-save-status {
+            margin-top: 8px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.45;
         }
 
         /* === FULL IMAGE === */
@@ -1265,6 +1375,17 @@
             .fact-row {
                 grid-template-columns: 1fr;
                 gap: 3px;
+            }
+            .student-dashboard {
+                grid-template-columns: 1fr;
+            }
+            .school-action {
+                border-radius: 12px;
+            }
+            .school-action-row,
+            .school-quick-actions {
+                display: grid;
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -1562,13 +1683,17 @@
     let activeSchoolSubject = "history";
     let activeSchoolGrade = "10";
     let activeSchoolMissionId = "history-10-apartheid";
+    let schoolProgress = { completed: {}, quiz: {}, notes: {}, examDrafts: {}, lastMissionId: "" };
+    let schoolTimerInterval = null;
+    let schoolTimerEndsAt = 0;
+    let schoolTimerMissionId = "";
 
     let lastSpentTime = Date.now();
 
     const defaultCategories = ["history of south africa", "south african culture", "geography of south africa", "south african wildlife", "south african sport", "south african cuisine", "south african music", "south african people", "apartheid in south africa", "south african languages", "south african fashion", "south african art"];
     let postsWithoutLike = 0;
 
-    const HTML_VERSION = "2.6.0";
+    const HTML_VERSION = "2.7.0";
 
     const wikidataEntityCache = new Map();
     const wikidataLabelCache = new Map();
@@ -2119,6 +2244,13 @@
             collections: {
                 Saved: [],
             },
+            schoolProgress: {
+                completed: {},
+                quiz: {},
+                notes: {},
+                examDrafts: {},
+                lastMissionId: "",
+            },
             timeSpentTotal: 0,
         }
         const loadedProfile = JSON.parse(localStorage.getItem(`mzansipedia-profile-${profileId}`) ?? "{}");
@@ -2127,6 +2259,7 @@
         seenPosts = profile.seenPosts;
         likedPosts = profile.likedPosts;
         collections = normalizeCollections(profile.collections);
+        schoolProgress = normalizeSchoolProgress(profile.schoolProgress);
         timeSpentTotal = profile.timeSpentTotal;
         profileName = profile.profileName;
         pagesArr.filter(e=>e.seen).forEach(e=>e.seen=0);
@@ -2154,9 +2287,20 @@
             seenPosts,
             likedPosts,
             collections,
+            schoolProgress: normalizeSchoolProgress(schoolProgress),
             timeSpentTotal,
         }
         localStorage.setItem(`mzansipedia-profile-${settings.profile}`, JSON.stringify(profile));
+    }
+
+    function normalizeSchoolProgress(value) {
+        return {
+            completed: value?.completed && typeof value.completed === "object" ? value.completed : {},
+            quiz: value?.quiz && typeof value.quiz === "object" ? value.quiz : {},
+            notes: value?.notes && typeof value.notes === "object" ? value.notes : {},
+            examDrafts: value?.examDrafts && typeof value.examDrafts === "object" ? value.examDrafts : {},
+            lastMissionId: typeof value?.lastMissionId === "string" ? value.lastMissionId : "",
+        };
     }
 
     function normalizeCollections(value) {
@@ -2642,16 +2786,180 @@
         return missions.find(mission => mission.id === activeSchoolMissionId) || missions[0] || schoolMissions[0];
     }
 
+    function getSchoolMissionById(missionId) {
+        return schoolMissions.find(mission => mission.id === missionId) || null;
+    }
+
+    function setActiveSchoolMission(mission) {
+        if (!mission) return;
+        activeSchoolSubject = mission.subject;
+        activeSchoolGrade = mission.grade;
+        activeSchoolMissionId = mission.id;
+        schoolProgress.lastMissionId = mission.id;
+        saveProfile();
+    }
+
+    function getDailySchoolMission() {
+        const now = new Date();
+        const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+        const hash = [...todayKey].reduce((total, char) => total + char.charCodeAt(0), 0);
+        return schoolMissions[hash % schoolMissions.length];
+    }
+
+    function getNextUnfinishedMission() {
+        return schoolMissions.find(mission => !schoolProgress.completed[mission.id]) || schoolMissions[0];
+    }
+
+    function getSchoolQuizSelections(missionId) {
+        const value = schoolProgress.quiz[missionId];
+        return value && typeof value === "object" ? value : {};
+    }
+
+    function getMissionQuizScore(mission) {
+        const selections = getSchoolQuizSelections(mission.id);
+        return mission.quiz.reduce((score, item, index) => score + (Number(selections[index]) === item.answer ? 1 : 0), 0);
+    }
+
+    function getSchoolStats() {
+        const completedCount = schoolMissions.filter(mission => schoolProgress.completed[mission.id]).length;
+        const answered = schoolMissions.reduce((total, mission) => total + Object.keys(getSchoolQuizSelections(mission.id)).length, 0);
+        const correct = schoolMissions.reduce((total, mission) => total + getMissionQuizScore(mission), 0);
+        return { completedCount, answered, correct, total: schoolMissions.length };
+    }
+
+    function getQuizOptionClass(mission, quizIndex, optionIndex) {
+        const selections = getSchoolQuizSelections(mission.id);
+        if (!(quizIndex in selections)) return "";
+        const selected = Number(selections[quizIndex]);
+        const answer = mission.quiz[quizIndex].answer;
+        if (optionIndex === answer) return "correct";
+        if (optionIndex === selected) return "incorrect";
+        return "";
+    }
+
+    function getQuizFeedback(mission, quizIndex) {
+        const selections = getSchoolQuizSelections(mission.id);
+        if (!(quizIndex in selections)) return "";
+        const selected = Number(selections[quizIndex]);
+        const item = mission.quiz[quizIndex];
+        return `${selected === item.answer ? "Correct." : "Not quite."} ${item.explain}`;
+    }
+
+    function getExamFeedback(mission, draft) {
+        const answer = String(draft || "").trim();
+        if (!answer) return "Write a short answer, then check if it has a point, evidence, and explanation.";
+        const words = answer.split(/\s+/).filter(Boolean).length;
+        const topicTerms = [
+            mission.sourceTitle,
+            mission.title,
+            ...mission.cards.map(card => card[0]),
+        ].join(" ").toLowerCase().split(/[^a-z0-9]+/).filter(term => term.length > 5);
+        const matchedTerms = [...new Set(topicTerms)].filter(term => answer.toLowerCase().includes(term)).slice(0, 3);
+        const checks = [];
+        checks.push(words >= 45 ? "Length is exam-ready." : `Add more detail. You have ${words} words; aim for at least 45.`);
+        checks.push(matchedTerms.length ? `Evidence words found: ${matchedTerms.join(", ")}.` : "Add topic evidence from the source cards.");
+        checks.push(/[.!?]\s+[A-Z0-9]/.test(answer) || answer.split(/[.!?]/).length > 2 ? "Your answer has more than one sentence." : "Split your idea into at least two clear sentences.");
+        return checks.join(" ");
+    }
+
+    function buildRevisionSheet(mission) {
+        const notes = String(schoolProgress.notes[mission.id] || "").trim();
+        const draft = String(schoolProgress.examDrafts[mission.id] || "").trim();
+        return [
+            `MzansiPedia revision sheet: ${mission.title}`,
+            `Subject: ${mission.subject === "history" ? "History" : "Tourism"} | Grade ${mission.grade}`,
+            `Main source: ${mission.sourceTitle}`,
+            "",
+            "Key cards:",
+            ...mission.cards.map((card, index) => `${index + 1}. ${card[0]} - ${card[1]}`),
+            "",
+            `Exam prompt: ${mission.examPrompt}`,
+            `Model answer: ${mission.modelAnswer}`,
+            "",
+            notes ? `My notes: ${notes}` : "My notes: ",
+            draft ? `My answer draft: ${draft}` : "My answer draft: ",
+        ].join("\n");
+    }
+
+    async function copyTextToClipboard(text) {
+        try {
+            await navigator.clipboard.writeText(text);
+            return true;
+        } catch {
+            const field = document.createElement("textarea");
+            field.value = text;
+            field.style.position = "fixed";
+            field.style.left = "-9999px";
+            document.body.appendChild(field);
+            field.focus();
+            field.select();
+            const copied = document.execCommand("copy");
+            field.remove();
+            return copied;
+        }
+    }
+
+    function stopSchoolTimer() {
+        if (schoolTimerInterval) clearInterval(schoolTimerInterval);
+        schoolTimerInterval = null;
+    }
+
+    function updateSchoolTimerLabel() {
+        const label = document.getElementById("schoolTimerLabel");
+        if (!label || schoolTimerMissionId !== activeSchoolMissionId) return;
+        const remaining = Math.max(0, schoolTimerEndsAt - Date.now());
+        const minutes = Math.floor(remaining / 60000);
+        const seconds = Math.floor((remaining % 60000) / 1000);
+        label.textContent = remaining ? `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")} left` : "Time is up. Finish your final sentence.";
+        if (!remaining) stopSchoolTimer();
+    }
+
+    function startSchoolTimer(minutes = 8) {
+        stopSchoolTimer();
+        schoolTimerMissionId = activeSchoolMissionId;
+        schoolTimerEndsAt = Date.now() + minutes * 60000;
+        updateSchoolTimerLabel();
+        schoolTimerInterval = setInterval(updateSchoolTimerLabel, 1000);
+    }
+
     function renderSchoolMode() {
         const missions = getSchoolMissions();
         const activeMission = getActiveSchoolMission();
         activeSchoolMissionId = activeMission.id;
+        schoolProgress.lastMissionId = activeMission.id;
+        const stats = getSchoolStats();
+        const dailyMission = getDailySchoolMission();
+        const nextMission = getNextUnfinishedMission();
+        const lastMission = getSchoolMissionById(schoolProgress.lastMissionId);
+        const missionScore = getMissionQuizScore(activeMission);
+        const missionComplete = !!schoolProgress.completed[activeMission.id];
+        const missionNotes = schoolProgress.notes[activeMission.id] || "";
+        const examDraft = schoolProgress.examDrafts[activeMission.id] || "";
         const subjectLabel = activeSchoolSubject === "history" ? "History" : "Tourism";
         schoolMode.innerHTML = `
             <div class="school-hero">
                 <div class="school-kicker">School Mode</div>
-                <h2>Study missions for South African learners</h2>
-                <p>Short, source-backed missions for History and Tourism. Built for learners who need the point fast, then want to test themselves before an exam or class discussion.</p>
+                <h2>Study, practise, and remember</h2>
+                <p>Short source-backed missions for History and Tourism, now with saved progress, quick revision cards, notes, and exam answer practice.</p>
+                <div class="student-dashboard" aria-label="Student progress">
+                    <article>
+                        <span>Completed</span>
+                        <strong>${stats.completedCount}/${stats.total}</strong>
+                    </article>
+                    <article>
+                        <span>Quiz score</span>
+                        <strong>${stats.correct}/${stats.answered || 0}</strong>
+                    </article>
+                    <article>
+                        <span>Today</span>
+                        <strong>${escapeHTML(dailyMission.title)}</strong>
+                    </article>
+                </div>
+                <div class="school-quick-actions">
+                    <button class="school-action primary" type="button" data-school-jump="${escapeAttr(dailyMission.id)}">Start today's mission</button>
+                    <button class="school-action" type="button" data-school-jump="${escapeAttr(nextMission.id)}">Next unfinished</button>
+                    ${lastMission ? `<button class="school-action" type="button" data-school-jump="${escapeAttr(lastMission.id)}">Resume last</button>` : ""}
+                </div>
             </div>
             <div class="school-controls">
                 <div class="school-control-group" aria-label="Subject picker">
@@ -2676,13 +2984,27 @@
                         <span class="mission-pill">Grade ${escapeHTML(activeMission.grade)}</span>
                         <span class="mission-pill">${escapeHTML(activeMission.time)}</span>
                         ${activeMission.tags.map(tag => `<span class="mission-pill">${escapeHTML(tag)}</span>`).join("")}
+                        <span class="mission-pill">${missionComplete ? "Completed" : "In progress"}</span>
+                        <span class="mission-pill">Quiz ${missionScore}/${activeMission.quiz.length}</span>
                     </div>
                     <h3>${escapeHTML(activeMission.title)}</h3>
                     <p>${escapeHTML(activeMission.subtitle)}</p>
                     <div class="school-action-row">
                         <button class="school-action primary" type="button" data-school-article="${escapeAttr(activeMission.sourceTitle)}">Open source article</button>
                         ${activeMission.related.slice(0, 3).map(title => `<button class="school-action" type="button" data-school-article="${escapeAttr(title)}">${escapeHTML(title)}</button>`).join("")}
+                        <button class="school-action" type="button" data-school-copy="${escapeAttr(activeMission.id)}">Copy revision sheet</button>
+                        <button class="school-action" type="button" data-school-timer>Start 8-min timer</button>
+                        <button class="school-action ${missionComplete ? "is-complete" : ""}" type="button" data-school-complete="${escapeAttr(activeMission.id)}">${missionComplete ? "Undo complete" : "Mark complete"}</button>
                     </div>
+                    <div class="school-timer" id="schoolTimerLabel">${schoolTimerMissionId === activeMission.id && schoolTimerEndsAt > Date.now() ? "" : "Timer ready"}</div>
+                </div>
+                <div class="flashcard-grid" aria-label="Flashcards">
+                    ${activeMission.cards.map((card, index) => `
+                        <details class="flash-card">
+                            <summary><span>Flashcard ${index + 1}</span><strong>${escapeHTML(card[0])}</strong></summary>
+                            <p>${escapeHTML(card[1])}</p>
+                        </details>
+                    `).join("")}
                 </div>
                 <div class="study-cards">
                     ${activeMission.cards.map((card, index) => `
@@ -2699,9 +3021,9 @@
                             <span>Quick check ${quizIndex + 1}</span>
                             <h4>${escapeHTML(item.q)}</h4>
                             <div class="quiz-options">
-                                ${item.options.map((option, optionIndex) => `<button class="quiz-option" type="button" data-quiz-index="${quizIndex}" data-option-index="${optionIndex}">${escapeHTML(option)}</button>`).join("")}
+                                ${item.options.map((option, optionIndex) => `<button class="quiz-option ${getQuizOptionClass(activeMission, quizIndex, optionIndex)}" type="button" data-quiz-index="${quizIndex}" data-option-index="${optionIndex}">${escapeHTML(option)}</button>`).join("")}
                             </div>
-                            <div class="quiz-feedback" id="quizFeedback-${quizIndex}"></div>
+                            <div class="quiz-feedback" id="quizFeedback-${quizIndex}">${escapeHTML(getQuizFeedback(activeMission, quizIndex))}</div>
                         </article>
                     `).join("")}
                 </div>
@@ -2709,10 +3031,18 @@
                     <span>Exam mode</span>
                     <h4>${escapeHTML(activeMission.examPrompt)}</h4>
                     <p>Try answering in your own words first. Then compare your answer with the model below.</p>
+                    <textarea class="school-textarea" data-school-exam="${escapeAttr(activeMission.id)}" rows="6" placeholder="Write your answer here. Aim for a clear point, evidence, and explanation.">${escapeHTML(examDraft)}</textarea>
+                    <div class="school-feedback" id="schoolExamFeedback">${escapeHTML(getExamFeedback(activeMission, examDraft))}</div>
                     <div class="model-answer">
                         <span>Model answer</span>
                         <p>${escapeHTML(activeMission.modelAnswer)}</p>
                     </div>
+                </div>
+                <div class="exam-box">
+                    <span>My notes</span>
+                    <h4>Things I want to remember</h4>
+                    <textarea class="school-textarea" data-school-notes="${escapeAttr(activeMission.id)}" rows="5" placeholder="Add your own notes, teacher reminders, or words you need to revise.">${escapeHTML(missionNotes)}</textarea>
+                    <p class="school-save-status" id="schoolSaveStatus">Saved on this device.</p>
                 </div>
                 <div class="exam-box">
                     <span>Important</span>
@@ -2728,6 +3058,8 @@
             button.onclick = () => {
                 activeSchoolSubject = button.dataset.schoolSubject;
                 activeSchoolMissionId = getSchoolMissions()[0]?.id || activeSchoolMissionId;
+                schoolProgress.lastMissionId = activeSchoolMissionId;
+                saveProfile();
                 renderSchoolMode();
             };
         });
@@ -2735,17 +3067,66 @@
             button.onclick = () => {
                 activeSchoolGrade = button.dataset.schoolGrade;
                 activeSchoolMissionId = getSchoolMissions()[0]?.id || activeSchoolMissionId;
+                schoolProgress.lastMissionId = activeSchoolMissionId;
+                saveProfile();
                 renderSchoolMode();
             };
         });
         schoolMode.querySelectorAll("[data-school-mission]").forEach(button => {
             button.onclick = () => {
                 activeSchoolMissionId = button.dataset.schoolMission;
+                schoolProgress.lastMissionId = activeSchoolMissionId;
+                saveProfile();
+                renderSchoolMode();
+            };
+        });
+        schoolMode.querySelectorAll("[data-school-jump]").forEach(button => {
+            button.onclick = () => {
+                setActiveSchoolMission(getSchoolMissionById(button.dataset.schoolJump));
                 renderSchoolMode();
             };
         });
         schoolMode.querySelectorAll("[data-school-article]").forEach(button => {
             button.onclick = () => showArticle(null, button.dataset.schoolArticle);
+        });
+        schoolMode.querySelectorAll("[data-school-complete]").forEach(button => {
+            button.onclick = () => {
+                const missionId = button.dataset.schoolComplete;
+                if (schoolProgress.completed[missionId])
+                    delete schoolProgress.completed[missionId];
+                else
+                    schoolProgress.completed[missionId] = new Date().toISOString();
+                saveProfile();
+                renderSchoolMode();
+            };
+        });
+        schoolMode.querySelectorAll("[data-school-copy]").forEach(button => {
+            button.onclick = async () => {
+                const mission = getSchoolMissionById(button.dataset.schoolCopy);
+                if (!mission) return;
+                const copied = await copyTextToClipboard(buildRevisionSheet(mission));
+                button.textContent = copied ? "Revision sheet copied" : "Copy failed";
+            };
+        });
+        schoolMode.querySelectorAll("[data-school-timer]").forEach(button => {
+            button.onclick = () => startSchoolTimer(8);
+        });
+        schoolMode.querySelectorAll("[data-school-notes]").forEach(field => {
+            field.oninput = () => {
+                schoolProgress.notes[field.dataset.schoolNotes] = field.value;
+                saveProfile();
+                const status = document.getElementById("schoolSaveStatus");
+                if (status) status.textContent = "Saved just now on this device.";
+            };
+        });
+        schoolMode.querySelectorAll("[data-school-exam]").forEach(field => {
+            field.oninput = () => {
+                const mission = getSchoolMissionById(field.dataset.schoolExam);
+                schoolProgress.examDrafts[field.dataset.schoolExam] = field.value;
+                saveProfile();
+                const feedback = document.getElementById("schoolExamFeedback");
+                if (feedback && mission) feedback.textContent = getExamFeedback(mission, field.value);
+            };
         });
         const activeMission = getActiveSchoolMission();
         schoolMode.querySelectorAll(".quiz-option").forEach(button => {
@@ -2756,7 +3137,6 @@
                 const siblings = schoolMode.querySelectorAll(`.quiz-option[data-quiz-index="${quizIndex}"]`);
                 siblings.forEach(option => {
                     option.classList.remove("correct", "incorrect");
-                    option.disabled = true;
                 });
                 button.classList.add(optionIndex === item.answer ? "correct" : "incorrect");
                 const correctOption = schoolMode.querySelector(`.quiz-option[data-quiz-index="${quizIndex}"][data-option-index="${item.answer}"]`);
@@ -2764,8 +3144,13 @@
                 const feedback = document.getElementById(`quizFeedback-${quizIndex}`);
                 if (feedback)
                     feedback.textContent = `${optionIndex === item.answer ? "Correct." : "Not quite."} ${item.explain}`;
+                if (!schoolProgress.quiz[activeMission.id] || typeof schoolProgress.quiz[activeMission.id] !== "object")
+                    schoolProgress.quiz[activeMission.id] = {};
+                schoolProgress.quiz[activeMission.id][quizIndex] = optionIndex;
+                saveProfile();
             };
         });
+        updateSchoolTimerLabel();
     }
 
     function searchArticles(query) {

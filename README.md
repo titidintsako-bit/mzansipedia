@@ -4,7 +4,7 @@ South African Wikipedia stories in a local-first reading feed.
 
 ## About
 
-MzansiPedia turns South African Wikipedia topics into a reading feed. It is filtered toward South African history, culture, places, people, sport, wildlife, languages, and food. School Mode adds short study missions for South African high school History and Tourism learners.
+MzansiPedia turns South African Wikipedia topics into a reading feed. It is filtered toward South African history, culture, places, people, sport, wildlife, languages, and food. School Mode adds short study missions for South African high school History and Tourism learners, with local progress, notes, quizzes, flashcards, and exam practice.
 
 Your likes, profile, and ranking scores stay in browser storage. The bundled dataset works offline after it loads; live article summaries and images are requested from Wikipedia and Wikimedia when a network is available. Reader pages also request Wikidata facts when Wikipedia returns a matching Wikidata item.
 
@@ -17,7 +17,7 @@ Your likes, profile, and ranking scores stay in browser storage. The bundled dat
 
 The repository is public on GitHub under AGPLv3. The app does not require accounts, API keys, server-side databases, or analytics.
 
-Profile choices, likes, ranking scores, and collections stay in local browser storage. Network requests go to the hosted static files, Wikipedia/Wikimedia article summary and image endpoints, and Wikidata entity endpoints while browsing.
+Profile choices, likes, ranking scores, collections, learner notes, quiz attempts, exam drafts, and School Mode completion status stay in local browser storage. Network requests go to the hosted static files, Wikipedia/Wikimedia article summary and image endpoints, and Wikidata entity endpoints while browsing.
 
 Do not commit local `.env*`, `.vercel/`, dependency folders, or generated test output; those paths are ignored.
 
@@ -32,7 +32,7 @@ Do not commit local `.env*`, `.vercel/`, dependency folders, or generated test o
 - Save articles into local collections and generate shareable knowledge cards.
 - Article pages suggest related follow-up reads from the local dataset.
 - Switch between Auto, Light, and Dark themes from Settings.
-- School Mode gives Grade 10-12 History and Tourism missions with quick cards, quizzes, source articles, and model-answer practice.
+- School Mode gives Grade 10-12 History and Tourism missions with quick cards, quizzes, source articles, flashcards, learner notes, daily mission prompts, saved progress, copyable revision sheets, and timed model-answer practice.
 
 ## Algorithm
 
